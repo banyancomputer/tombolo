@@ -1,0 +1,21 @@
+{
+  "uploads": [
+    {
+      "status": "0",
+      "root": "/home/ita/animal_pics",
+      "owner": "ita@banyan.computer",
+      "date": 123456789,
+      "files": [
+        {
+          "name": "cat_pic.jpeg",
+          "parts": [
+            {
+              "name": "abcdefg",
+              "size": 123456789
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
