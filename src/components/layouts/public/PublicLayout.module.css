@@ -1,0 +1,12 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    max-width: 352px;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto;
+}
+
+.main > section {
+    padding: 32px;
+}
