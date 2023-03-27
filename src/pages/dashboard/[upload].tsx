@@ -65,6 +65,7 @@ export async function getServerSideProps(ctx: any) {
     const uploads = await db.getUploadsByUser(uid);
     console.log('uploadID: ', uploadId);
     console.log(uploads);
+    
     // Check if the requested file is owned by the user
     const uploadExists = uploads.some((upload) => upload.id === uploadId);
     console.log(uploadExists);
@@ -76,20 +77,23 @@ export async function getServerSideProps(ctx: any) {
         },
       };
     }
-    const files = await db.getFilesByUpload(uploadId);
+    const files = await db.getFilesByUpload(uid, uploadId);
     const total_size =
       files.reduce((acc, file) => {
-        // @ts-ignore
         return acc + file.size;
       }, 0) / 1024;
+
+    console.log(`files0size: ${files[0].size}`)
 
     return {
       props: {
         files: files,
-        total_size: total_size,
+        // Size in kilobytes
+        total_size: 120335889,
       },
     };
   } catch (err) {
+    
     ctx.res.writeHead(302, { Location: '/' });
     ctx.res.end();
     return {
@@ -121,6 +125,8 @@ const customStyles = {
 };
 
 const FileView: NextPageWithLayout<IFileView> = ({ files, total_size }) => {
+    console.log(`props: ${files}, ${total_size}`);
+
   const fileViewColumns = [
     {
       name: 'FILE NAME',
@@ -149,7 +155,8 @@ const FileView: NextPageWithLayout<IFileView> = ({ files, total_size }) => {
     </div>
   );
 
-  // @ts-ignore
+  console.log(`files: ${files}`);
+
   return (
     <>
       {files.length > 0 ? (
