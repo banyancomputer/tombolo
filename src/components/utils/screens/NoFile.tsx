@@ -17,7 +17,7 @@ const NoFile = () => {
         <div className="flex">
           about Tombolo
           {/*@ts-ignore*/}
-          <HStack spacing={2} direction="row">
+          <HStack spacing={8} direction="row">
             <ArrowForwardIcon />
             <Icon
               w={30}
