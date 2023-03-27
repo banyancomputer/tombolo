@@ -14,7 +14,7 @@ const NavItem: React.FC<INavItem> = ({ item }) => {
       <li>
         {item.callback ? (
           <button
-            className={`flex items-center justify-start gap-2 font-bold text-sm text-base-content hover:text-base-100 bg-base-100 hover:bg-base-content ease-in-out duration-[250ms] ${
+            className={`flex gap-2 font-semibold text-lg ${
               location.pathname === item.href
                 ? '!text-base-100 !bg-base-content'
                 : ''

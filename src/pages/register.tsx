@@ -133,84 +133,78 @@ const Register: NextPageWithLayout = ({}) => {
   return (
     <div>
       <PublicRoute>
-        <div className="text-2xl font-medium align-left">Sign Up</div>
-        <div className="text-sm font-medium align-left">
+        <div className="text-6xl font-semibold align-left mb-2">Sign Up</div>
+        <div className="text-xs font-normal align-left mb-8">
           Already have an account?{' '}
           <Link href="/login" className={`text-blue-500`}>
-            Log in
+            Sign in.
           </Link>
         </div>
-        <form
-          onSubmit={handleSignUpUser}
-          className="w-full p-6 rounded bg-base-content text-base-100"
-        >
-          <h2 className="mb-2 text-sm font-semibold">Email</h2>
+        <form onSubmit={handleSignUpUser}>
           <div className="relative">
             <input
               id="email"
               type="text"
-              placeholder="me@here.com"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-                emailValid ? '!border-blue-300' : '!border-orange-400'
-              }`}
+              placeholder="E-mail"
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
-          <h2 className="mt-4 mb-2 text-sm font-semibold">Password</h2>
           <div className="relative">
             <input
               id="password"
               type="password"
-              placeholder="********"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-                passwordValid ? '!border-blue-300' : '!border-orange-400'
-              }
-                    `}
+              placeholder="Password"
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
-          <h2 className="mt-4 mb-2 text-sm font-semibold">Full Name</h2>
+          {/*<h2 className="mt-4 mb-2 text-sm font-semibold">Confirm Password</h2>*/}
+          {/*<div className="relative">*/}
+          {/*  <input*/}
+          {/*    id="confirmPassword"*/}
+          {/*    type="password"*/}
+          {/*    placeholder="********"*/}
+          {/*    className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${*/}
+          {/*      passwordValid ? '!border-blue-300' : '!border-orange-400'*/}
+          {/*    }*/}
+          {/*            `}*/}
+          {/*    onInput={handleValueChange}*/}
+          {/*  />*/}
+          {/*</div>*/}
           <div className="relative">
             <input
               id="fullName"
               type="text"
-              placeholder="John Doe"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block
-                   
-                        `}
+              placeholder="Full Name"
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
-          <h2 className="mt-4 mb-2 text-sm font-semibold">Company Name</h2>
           <div className="relative">
             <input
               id="companyName"
               type="text"
               placeholder="Company Name"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block`}
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
-          <h2 className="mt-4 mb-2 text-sm font-semibold">Job Title</h2>
           <div className="relative">
             <input
               id="jobTitle"
               type="text"
               placeholder="Job Title"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block`}
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
-          <h2 className="mt-4 mb-2 text-sm font-semibold">Phone Number</h2>
           <div className="relative">
             <input
               id="phoneNumber"
               type="text"
               placeholder="Phone Number"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-                phoneNumberValid ? '!border-blue-300' : '!border-orange-400'
-              }
-                        `}
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
@@ -226,8 +220,7 @@ const Register: NextPageWithLayout = ({}) => {
 
           <div className="flex items-center mt-4">
             <button
-              className="ml-2 !h-[52px] flex-1 btn btn-primary disabled:opacity-50 disabled:border-neutral-900 disabled:text-neutral-900"
-              disabled={buttonDisabled}
+              className="!h-[52px] flex-1 text-[#00143173] rounded-sm bg-[#CED6DE] text-"
               type="submit"
             >
               Sign Up

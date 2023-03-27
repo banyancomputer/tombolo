@@ -70,39 +70,29 @@ const Login: NextPageWithLayout = ({}) => {
   return (
     <div>
       <PublicRoute>
-        <div className="text-2xl font-medium align-left">Login</div>
-        <div className="text-sm text-gray-500 align-left">
-          Don't have an account?{' '}
+        <div className="text-6xl font-semibold align-left mb-2">Log in</div>
+        <div className="text-xs font-normal align-left mb-6">
+          New User?{' '}
           <Link href="/register" className="text-blue-500">
-            Sign up
+            Sign up for free.
           </Link>
         </div>
-        <form
-          onSubmit={handleLoginUser}
-          className="w-full p-6 rounded bg-base-content text-base-100"
-        >
-          <h2 className="mb-2 text-sm font-semibold">Email</h2>
+        <form onSubmit={handleLoginUser}>
           <div className="relative">
             <input
               id="email"
               type="text"
-              placeholder="me@here.com"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-                emailValid ? '!border-blue-300' : '!border-orange-400'
-              }`}
+              placeholder="E-mail"
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
               onInput={handleValueChange}
             />
           </div>
-          <h2 className="mt-4 mb-2 text-sm font-semibold">Password</h2>
           <div className="relative">
             <input
               id="password"
               type="password"
-              placeholder="********"
-              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-                passwordValid ? '!border-blue-300' : '!border-orange-400'
-              }
-                    `}
+              placeholder="Password"
+              className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3`}
               onInput={handleValueChange}
             />
           </div>
@@ -117,27 +107,20 @@ const Login: NextPageWithLayout = ({}) => {
           )}
 
           <div className="flex items-center mt-4">
-            {loading ? (
-              <div className="flex-1 ml-2">
-                <LoadingSpinner />
-              </div>
-            ) : (
-              <button
-                className="ml-2 !h-[52px] flex-1 btn btn-primary disabled:opacity-50 disabled:border-neutral-900 disabled:text-neutral-900"
-                disabled={buttonDisabled}
-                type="submit"
-              >
-                Login
-              </button>
-            )}
+            <button
+              className="!h-[52px] flex-1 text-[#00143173] rounded-sm bg-[#CED6DE] text-"
+              type="submit"
+            >
+              Log in
+            </button>
           </div>
         </form>
 
         {/* Password Reset Email */}
         <div className="text-sm text-center">
           <Link href="/recover">
-            <div className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">
-              Forgot your password?
+            <div className="text-blue-500 text-xs mt-4">
+              Get help logging in.
             </div>
           </Link>
         </div>
