@@ -8,7 +8,9 @@ const UploadPortal: NextPageWithLayout = () => {
     <div className="h-screen flex justify-center content-center">
       <div className="text-xl font-medium mt-auto mb-auto">
         While Tombolo is in beta version,
-        <p className="break-after-colum">we will handle your deals manually.</p>
+        <p className="break-after-colum">
+          we will handle your uploads manually.
+        </p>
         Please fill in the
         <Link
           href={'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87'}

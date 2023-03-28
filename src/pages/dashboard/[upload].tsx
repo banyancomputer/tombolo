@@ -2,48 +2,13 @@ import Head from 'next/head';
 import { NextPageWithLayout } from '@/pages/page';
 import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
 import { db } from '@/lib/firebase/admin';
-import SideNav from '@/components/navs/side/SideNav';
 import nookies from 'nookies';
 import admin from '@/lib/firebase/admin';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import {
-  AddIcon,
-  ArrowBackIcon,
-  ChevronDownIcon,
-  HamburgerIcon,
-  SearchIcon,
-} from '@chakra-ui/icons';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 import Separator from '@/images/icons/Separator';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Badge,
-  Box,
-  Button,
-  Checkbox,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerOverlay,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  RangeSlider,
-  RangeSliderFilledTrack,
-  RangeSliderThumb,
-  RangeSliderTrack,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Badge, Button } from '@chakra-ui/react';
 import NoUpload from '@/components/utils/screens/NoUpload';
 // import FullScreenLoader from '../common/FullScreenLoader';
 import BrandLogo from '@/images/icons/BrandLogo';
@@ -68,6 +33,7 @@ export async function getServerSideProps(ctx: any) {
     // Check if the requested file is owned by the user
     const uploadExists = uploads.some((upload) => upload.id === uploadId);
     console.log(uploadExists);
+
     if (!uploadExists) {
       return {
         props: {
@@ -76,6 +42,7 @@ export async function getServerSideProps(ctx: any) {
         },
       };
     }
+
     const files = await db.getFilesByUpload(uploadId);
     const total_size =
       files.reduce((acc, file) => {
@@ -141,7 +108,7 @@ const FileView: NextPageWithLayout<IFileView> = ({ files, total_size }) => {
         className="w-full bg-[#16181B]"
         onClick={() =>
           (window.location.href =
-            'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
+            'https://share.hsforms.com/1OdmJPpFISTOxRp8SU2YfUge3p87')
         }
       >
         File Retrieval Request
@@ -150,6 +117,7 @@ const FileView: NextPageWithLayout<IFileView> = ({ files, total_size }) => {
   );
 
   // @ts-ignore
+  console.log(files);
   return (
     <>
       {files.length > 0 ? (
@@ -173,7 +141,8 @@ const FileView: NextPageWithLayout<IFileView> = ({ files, total_size }) => {
               {/* @ts-ignore */}
               <Button
                 ml={4}
-                colorScheme="blue"
+                bg="white"
+                textColor={'blue.500'}
                 variant="solid"
                 onClick={
                   () =>
@@ -184,6 +153,13 @@ const FileView: NextPageWithLayout<IFileView> = ({ files, total_size }) => {
                 <ArrowBackIcon />
                 All Uploads
               </Button>
+            </div>
+            <div className="absolute mt-28 ml-4 text-xl font-semibold flex items-center">
+              {/* change to upload name */}
+              pet-pics
+              <div className="text-sm ml-2">
+                <Badge colorScheme="green">Stored</Badge>
+              </div>
             </div>
           </div>
           <DataTable

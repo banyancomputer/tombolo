@@ -31,7 +31,7 @@ const navItemsUpper = [
   },
   {
     label: 'Support',
-    href: 'https://discord.gg/PVeg4PAqqC',
+    href: 'mailto:support@tombolo.store',
     icon: Support,
   },
 ];

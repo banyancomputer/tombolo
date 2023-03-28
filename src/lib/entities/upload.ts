@@ -4,6 +4,7 @@ interface Upload {
   size: number;
   status: number;
   root: string;
+  files: File[]
 }
 
 export default Upload;

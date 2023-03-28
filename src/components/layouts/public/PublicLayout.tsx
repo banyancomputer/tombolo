@@ -8,7 +8,7 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
   return (
     <>
       <div className="fixed h-screen w-full ">
-        <div className="h-full object-cover float-left">
+        <div className="float-left flex justify-center items-center h-screen">
           <BackgroundImage />
         </div>
 
