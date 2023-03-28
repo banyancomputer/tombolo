@@ -11,7 +11,7 @@ const UploadPortal: NextPageWithLayout = () => {
         <div className="text-xl font-medium mt-auto mb-auto">
           While Tombolo is in beta version,
           <p className="break-after-colum">
-            we will handle your deals manually.
+            we will handle your uploads manually.
           </p>
           Please fill in the
           <Link

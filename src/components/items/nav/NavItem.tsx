@@ -28,7 +28,7 @@ const NavItem: React.FC<INavItem> = ({ item }) => {
           </button>
         ) : (
           <Link
-            className={`flex items-center justify-start gap-2 font-medium text-lg text-base-content hover:text-[#5299E0] bg-base-100 ${
+            className={`flex items-center justify-start gap-2 font-medium text-lg text-base-content hover:text-[#5299E0] focus:text-[#5299E0] active:text-[#5299E0] bg-base-100 ${
               location.pathname === item.href ? '!text-[#5299E0]' : ''
             }`}
             href={item.href}

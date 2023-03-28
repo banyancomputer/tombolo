@@ -8,16 +8,25 @@ const NoUploadScreen = () => {
   return (
     <div className="h-screen flex justify-center content-center">
       <div className="text-xl font-medium mt-auto mb-auto">
-        You don&apos;t have any storage deals yet.
+        You don&apos;t have any upload groups yet.
         <p className="break-after-colum"></p>
-        <Link href={''} className="text-[#5299E0] underline underline-offset-4">
+        <Link
+          href={'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87'}
+          className="text-[#5299E0] underline underline-offset-4"
+        >
           Request
         </Link>{' '}
-        your first deal or learn more
+        your first upload or learn more
         <div className="flex">
-          about Tombolo
+          about
+          <Link
+            href="https://www.tombolo.store/"
+            className="text-[#5299E0] underline underline-offset-4 ml-2"
+          >
+            Tombolo
+          </Link>
           {/*@ts-ignore*/}
-          <HStack spacing={8} direction="row">
+          <HStack spacing={2} direction="row">
             <ArrowForwardIcon />
             <Icon
               w={30}
@@ -25,14 +34,6 @@ const NoUploadScreen = () => {
               as={SiTwitter}
               onClick={() =>
                 window.open('https://twitter.com/BanyanComputer', '_blank')
-              }
-            />
-            <Icon
-              w={30}
-              h={30}
-              as={SiMedium}
-              onClick={() =>
-                window.open('https://medium.com/@banyan.computer', '_blank')
               }
             />
             <Icon
