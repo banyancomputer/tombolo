@@ -1,6 +1,6 @@
 import { ref, get } from 'firebase/database';
 import Upload from '@/lib/entities/upload';
-import File from '@/lib/entities/file';
+import RTFile from '@/lib/entities/file';
 import admin from '@/lib/firebase/admin';
 
 export async function checkUserExists(uid: string): Promise<boolean> {
@@ -54,19 +54,20 @@ export async function createUser(
   }
 }
 
-export async function getFilesByUpload(uploadId: any): Promise<File[]> {
+export async function getFilesByUpload(uid: any, uploadId: any): Promise<RTFile[]> {
   console.log('getFilesByUpload: ', uploadId);
-  const filesRef = admin.database().ref('uploads/' + uploadId + '/files');
-  let files: any[] = [];
-  try {
-    const snapshot = await filesRef.get();
-    if (snapshot.exists()) {
-      files = snapshot.val();
+    // Get all user uploads
+  const uploads = await getUploadsByUser(uid);
+  
+  // Iterate over all user uploads
+  for (const upload of uploads) {
+    // If the upload matches the requestd ID
+    if (upload.id === uploadId) {
+      // Return the files
+      return upload.files;
     }
-  } catch (error) {
-    console.log(error);
   }
-  return files;
+  return [];
 }
 
 export interface DbError {
