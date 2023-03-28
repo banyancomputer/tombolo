@@ -1,7 +1,14 @@
 import { Upload, uploadConverter } from '@/lib/entities/upload';
 import { File, fileConverter } from '@/lib/entities/file';
 import client from '@/lib/firebase/client/client';
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { userConverter } from '@/lib/entities/user';
 
 export async function registerUser(
@@ -23,6 +30,13 @@ export async function registerUser(
   });
 }
 
+export async function updateUserEmail(uid: string, email: string) {
+  const userDoc = doc(client.db, 'users', uid);
+  await updateDoc(userDoc, {
+    email: email,
+  });
+}
+
 export async function getUser(uid: string) {
   const userDoc = doc(client.db, 'users', uid);
   const snapshot = await getDoc(userDoc).catch((error) => {
@@ -36,6 +50,15 @@ export async function getUser(uid: string) {
 export async function createUpload(uid: string, upload: Upload) {
   const uploadRef = collection(client.db, 'users/' + uid + '/uploads');
   await setDoc(doc(uploadRef, upload.id), uploadConverter.toFirestore(upload));
+}
+
+export async function getUpload(uid: string, uploadId: string) {
+  const uploadDoc = doc(client.db, 'users/' + uid + '/uploads', uploadId);
+  const snapshot = await getDoc(uploadDoc).catch((error) => {
+    console.log('Error getting upload: ', error);
+    return error;
+  });
+  return uploadConverter.fromFirestore(snapshot, {});
 }
 
 export async function getUploads(uid: string) {

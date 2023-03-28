@@ -10,6 +10,8 @@ import NoFileScreen from '@/components/utils/screens/NoFileScreen';
 import { useAuth } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import { db, storage } from '@/lib/firebase/client';
+import { Badge } from '@chakra-ui/react';
+import AuthorizedRoute from '@/components/utils/routes/Authorized';
 
 export interface IFileView {}
 
@@ -30,6 +32,7 @@ const customStyles = {
 const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const { user } = useAuth();
   const router = useRouter();
+  const [upload, setUpload] = useState<any>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [total_size, setTotalSize] = useState<number>(0);
   const [manifestUrl, setManifestUrl] = useState<string>('');
@@ -73,6 +76,23 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
     }
   }, [user, router]);
 
+  useEffect(() => {
+    // Get the upload ID from the URL. Its the last part of the URL
+    const upload_id = router.asPath.split('/').pop();
+    if (upload_id && user) {
+      // Get the uploads from the backend
+      db.getUpload(user?.uid, upload_id)
+        .then((upload) => {
+          console.log(upload);
+          // Set the files
+          setUpload(upload);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user, router]);
+
   const fileViewColumns = [
     {
       name: 'FILE NAME',
@@ -104,7 +124,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
 
   // @ts-ignore
   return (
-    <>
+    <AuthorizedRoute>
       {files.length > 0 ? (
         <>
           <div className="relative flex h-36">
@@ -133,8 +153,8 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                 <ArrowBackIcon />
                 All Uploads
               </Button>
-            </div>
-            <div className="flex mt-4">
+              {/*</div>*/}
+              {/*<div className="flex mt-4">*/}
               {/* @ts-ignore */}
               <Button
                 ml={4}
@@ -145,11 +165,20 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                   () => window.open(manifestUrl, '_blank')
                 }
               >
-                {/*<ArrowBackIcon />*/}
                 Download Manifest
               </Button>
             </div>
+            <div className="flex mt-4">
+              <div className="absolute mt-28 ml-4 text-xl font-semibold flex items-center">
+                {/* change to upload name */}
+                <div>{upload?.name}</div>
+                <div className="text-sm ml-2">
+                  <Badge colorScheme="green">Stored</Badge>
+                </div>
+              </div>
+            </div>
           </div>
+
           <DataTable
             columns={fileViewColumns}
             data={files} // for alex: change to file data
@@ -161,7 +190,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
       ) : (
         <NoFileScreen />
       )}
-    </>
+    </AuthorizedRoute>
   );
 };
 

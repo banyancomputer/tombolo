@@ -35,6 +35,7 @@ import { Upload } from '@/lib/entities/upload';
 import { useAuth } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
+import Filter from '@/images/icons/Filter';
 
 export interface IDashboard {}
 
@@ -58,13 +59,15 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
   const { user } = useAuth();
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [total_size, setTotalSize] = useState<number>(0);
+  const [statusFilter, setStatusFilter] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     if (user) {
       db.getUploads(user.uid)
         .then((uploads) => {
           setUploads(uploads);
-          setTotalSize(uploads.reduce((a, b) => a + b.size, 0));
+          setTotalSize(uploads.reduce((a, b) => a + b.size, 0) / 1024);
         })
         .catch((err) => {
           console.log(err);
@@ -89,13 +92,11 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
       sortable: true,
       cell: (row: Upload) => {
         const status = row.status;
-        if (status == 4) {
+        if (status == 3) {
           // @ts-ignore
           return <Badge colorScheme="red">Terminated</Badge>;
-        } else if (row.status == 3) {
-          return <Badge colorScheme="green">Stored</Badge>;
         } else if (row.status == 2) {
-          return <Badge colorScheme="blue">Upload Scheduled</Badge>;
+          return <Badge colorScheme="green">Stored</Badge>;
         } else if (row.status == 1) {
           return <Badge colorScheme="blue">Data Prep</Badge>;
         } else {
@@ -123,13 +124,31 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
         className="w-full bg-[#CB3535] "
         onClick={() =>
           (window.location.href =
-            'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
+            'https://share.hsforms.com/143jPAVGURWODS_QtCkFJtQe3p87')
         }
       >
         Request Termination
       </button>
     </div>
   );
+
+  const applyFilters = () => {
+    let filtered = uploads;
+
+    if (statusFilter.length > 0) {
+      filtered = filtered.filter((item) => statusFilter.includes(item.status));
+    }
+
+    if (searchQuery !== '') {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(query) ||
+          item.id.toLowerCase().includes(query)
+      );
+    }
+    return filtered;
+  };
 
   return (
     <AuthorizedRoute>
@@ -157,7 +176,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
               </Button>
               <div className="flex gap-4 ml-auto">
                 <Button
-                  leftIcon={<HamburgerIcon />}
+                  leftIcon={<Filter />}
                   className=""
                   onClick={onOpen}
                   colorScheme="black"
@@ -177,6 +196,8 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                     type="tel"
                     placeholder="Search"
                     bgColor="white"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
               </div>
@@ -204,60 +225,85 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                       </h2>
                       <AccordionPanel pb={4}>
                         <div className="flex flex-col gap-1">
-                          <Checkbox>Data Prep</Checkbox>
-                          <Checkbox>In Progress</Checkbox>
-                          <Checkbox>Upload Scheduled</Checkbox>
-                          <Checkbox>Terminated</Checkbox>
+                          <Checkbox
+                            value={0}
+                            isChecked={statusFilter.includes(0)}
+                            onChange={(e) =>
+                              setStatusFilter((prev) =>
+                                e.target.checked
+                                  ? [...prev, 0]
+                                  : prev.filter((status) => status !== 0)
+                              )
+                            }
+                          >
+                            Upload Requested
+                          </Checkbox>
+                          <Checkbox
+                            value={1}
+                            isChecked={statusFilter.includes(1)}
+                            onChange={(e) =>
+                              setStatusFilter((prev) =>
+                                e.target.checked
+                                  ? [...prev, 1]
+                                  : prev.filter((status) => status !== 1)
+                              )
+                            }
+                          >
+                            Data Prep
+                          </Checkbox>
+                          <Checkbox
+                            value={2}
+                            isChecked={statusFilter.includes(2)}
+                            onChange={(e) =>
+                              setStatusFilter((prev) =>
+                                e.target.checked
+                                  ? [...prev, 2]
+                                  : prev.filter((status) => status !== 2)
+                              )
+                            }
+                          >
+                            Stored
+                          </Checkbox>
+                          <Checkbox
+                            value={3}
+                            isChecked={statusFilter.includes(3)}
+                            onChange={(e) =>
+                              setStatusFilter((prev) =>
+                                e.target.checked
+                                  ? [...prev, 3]
+                                  : prev.filter((status) => status !== 3)
+                              )
+                            }
+                          >
+                            Terminated
+                          </Checkbox>
                         </div>
                       </AccordionPanel>
                     </AccordionItem>
 
-                    <AccordionItem>
-                      <h2>
-                        <AccordionButton className="border-t-2 border-t-black">
-                          <Box
-                            as="span"
-                            flex="1"
-                            textAlign="left"
-                            className="font-bold mb-2 text-xs mt-2"
-                          >
-                            UPLOAD SIZE
-                          </Box>
-                          <AccordionIcon />
-                        </AccordionButton>
-                      </h2>
-                      <AccordionPanel pb={4}>
-                        <RangeSlider
-                          aria-label={['min', 'max']}
-                          colorScheme="gray"
-                          defaultValue={[10, 30]}
-                        >
-                          <RangeSliderTrack>
-                            <RangeSliderFilledTrack />
-                          </RangeSliderTrack>
-                          <RangeSliderThumb index={0} />
-                          <RangeSliderThumb index={1} />
-                        </RangeSlider>
-                        <div className="flex items-center gap-2 pt-4">
-                          <InputGroup size="md">
-                            <Input pr="2rem" placeholder="0" />
-                            <InputRightElement width="3rem">
-                              <p className="text-[#00143140]">TiB</p>
-                            </InputRightElement>
-                          </InputGroup>
-                          <Separator />
-                          <InputGroup size="md">
-                            <Input pr="2rem" placeholder="1000000" />
-                            <InputRightElement width="3rem">
-                              <p className="text-[#00143140]">TiB</p>
-                            </InputRightElement>
-                          </InputGroup>
-                        </div>
-                        <Button colorScheme="blue" variant="link" size="xs">
-                          Clear
-                        </Button>
-                      </AccordionPanel>
-                    </AccordionItem>
+                    {/*<AccordionItem>*/}
+                    {/*  <h2>*/}
+                    {/*    <AccordionButton className="border-t-2 border-t-black">*/}
+                    {/*      <Box*/}
+                    {/*        as="span"*/}
+                    {/*        flex="1"*/}
+                    {/*        textAlign="left"*/}
+                    {/*        className="font-bold mb-2 text-xs mt-2"*/}
+                    {/*      >*/}
+                    {/*        UPLOAD SIZE*/}
+                    {/*      </Box>*/}
+                    {/*      <AccordionIcon />*/}
+                    {/*    </AccordionButton>*/}
+                    {/*  </h2>*/}
+                    {/*  <AccordionPanel pb={4}>*/}
+                    {/*    <div className="flex flex-col gap-1">*/}
+                    {/*      <Checkbox>less than 10TiB</Checkbox>*/}
+                    {/*      <Checkbox>10-1000TiB</Checkbox>*/}
+                    {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
+                    {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
+                    {/*    </div>*/}
+                    {/*  </AccordionPanel>*/}
+                    {/*</AccordionItem>*/}
                   </Accordion>
                 </DrawerBody>
                 <DrawerFooter
@@ -265,11 +311,14 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                   borderTopColor="black"
                   className="mt-12"
                 >
-                  <Button colorScheme="black" variant="outline" mr="auto">
+                  {/* add clear all */}
+                  <Button
+                    colorScheme="black"
+                    variant="outline"
+                    mr="auto"
+                    onClick={() => setStatusFilter([])}
+                  >
                     Clear All
-                  </Button>
-                  <Button bgColor="#000" textColor="white" variant="white">
-                    Save Filters
                   </Button>
                 </DrawerFooter>
               </DrawerContent>
@@ -277,7 +326,8 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
           </div>
           <DataTable
             columns={overviewColumns}
-            data={uploads}
+            // data={uploads}
+            data={applyFilters()} // thea: remove this
             customStyles={customStyles}
             expandableRows
             expandableRowsComponent={ExpandedComponentOverView}

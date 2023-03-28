@@ -5,6 +5,7 @@ import { AuthProvider } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import LoadingSpinner from '@/components/utils/spinners/loading/LoadingSpinner';
+import { ChakraProvider } from '@chakra-ui/react';
 
 interface AppPropsWithLayout extends AppProps {
   Component: NextPageWithLayout;
@@ -23,7 +24,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page) => page);
   return getLayout(
     <AuthProvider>
-      <Component {...pageProps} />
+      <ChakraProvider>
+        <Component {...pageProps} />
+      </ChakraProvider>
       {/*{loading ? <LoadingSpinner /> : <Component {...pageProps} />}*/}
     </AuthProvider>
   );
