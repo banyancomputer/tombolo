@@ -1,50 +1,61 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { auth } from '@/lib/firebase/client';
-import nookies from 'nookies';
 
 export const AuthContext = createContext<{
   user: auth.User;
   userLoading: boolean;
+  signUp: (email: string, password: string) => Promise<string>;
+  logIn: (email: string, password: string) => Promise<string>;
+  logOut: () => Promise<void>;
 }>({
   user: null,
   userLoading: true,
+  signUp: async (email: string, password: string) => '',
+  logIn: async (email: string, password: string) => '',
+  logOut: async () => {},
 });
 
 export const AuthProvider = ({ children }: any) => {
   const [userLoading, setUserLoading] = useState(true);
   const [user, setUser] = useState<auth.User | null>(null);
 
-  // listen for token changes
-  // call setUser and write new token as a cookie
   useEffect(() => {
-    setUserLoading(true);
-    return auth.onIdTokenChanged(async (user: auth.User) => {
-      if (!user) {
-        setUser(null);
-        setUserLoading(false);
-        nookies.set(undefined, 'token', '', { path: '/' });
-      } else {
-        const token = await user.getIdToken();
-        setUser(user);
-        setUserLoading(false);
-        nookies.set(undefined, 'token', token, { path: '/' });
-      }
+    auth.onAuthStateChanged((user: auth.User) => {
+      setUser(user);
+      setUserLoading(false);
     });
-  }, []);
+  });
 
-  // force refresh the token every 10 minutes
-  useEffect(() => {
-    const handle = setInterval(async () => {
-      const user = auth.getCurrentUser();
-      if (user) await user.getIdToken(true);
-    }, 10 * 60 * 1000);
+  const signUp = (email: string, password: string): Promise<string> => {
+    return auth
+      .signUp(email, password)
+      .then((user) => {
+        return user;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  };
 
-    // clean up setInterval
-    return () => clearInterval(handle);
-  }, []);
+  const logIn = (email: string, password: string): Promise<string> => {
+    return auth
+      .signIn(email, password)
+      .then((user) => {
+        return user;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  };
+
+  const logOut = (): Promise<void> => {
+    return auth.signOut().catch((err) => {
+      return err.message;
+    });
+  };
 
   return (
-    <AuthContext.Provider value={{ user, userLoading }}>
+    <AuthContext.Provider value={{ user, userLoading, signUp, logIn, logOut }}>
       {children}
     </AuthContext.Provider>
   );

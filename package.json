@@ -2,12 +2,19 @@
   "name": "tombolo",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": "please use yarn",
+    "yarn": ">=1.22.0"
+  },
   "scripts": {
     "build": "next build",
+    "build:dev": "env-cmd -f .env.development cross-env NODE_ENV='development' next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "dev": "cross-env NODE_OPTIONS='--inspect' next dev"
+    "dev": "cross-env NODE_OPTIONS='--inspect' NODE_ENV='development' next dev",
+    "prod": "cross-env NODE_ENV='production' next start"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",
@@ -32,11 +39,13 @@
     "react-icons": "^4.8.0",
     "styled-components": "^5.3.9",
     "typescript": "5.0.2",
+    "uid": "^2.0.1",
     "validator": "^13.9.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",
+    "env-cmd": "^10.1.0",
     "postcss": "^8.4.21",
     "prettier": "^2.8.6",
     "tailwindcss": "^3.2.7"

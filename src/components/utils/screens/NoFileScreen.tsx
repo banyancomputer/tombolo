@@ -4,7 +4,7 @@ import React from 'react';
 import { SiTwitter, SiMedium, SiInstagram, SiDiscord } from 'react-icons/si';
 import Link from 'next/link';
 
-const NoFile = () => {
+const NoFileScreen = () => {
   return (
     <div className="h-screen flex justify-center content-center">
       <div className="text-xl font-medium mt-auto mb-auto">
@@ -50,4 +50,4 @@ const NoFile = () => {
   );
 };
 
-export default NoFile;
+export default NoFileScreen;

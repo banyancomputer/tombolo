@@ -1,19 +1,9 @@
-import Head from 'next/head';
 import { NextPageWithLayout } from '@/pages/page';
 import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
-import { db } from '@/lib/firebase/admin';
-import SideNav from '@/components/navs/side/SideNav';
-import nookies from 'nookies';
-import admin from '@/lib/firebase/admin';
+import { db } from '@/lib/firebase/client';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import {
-  AddIcon,
-  ArrowBackIcon,
-  ChevronDownIcon,
-  HamburgerIcon,
-  SearchIcon,
-} from '@chakra-ui/icons';
+import { AddIcon, HamburgerIcon, SearchIcon } from '@chakra-ui/icons';
 import Separator from '@/images/icons/Separator';
 import {
   Accordion,
@@ -34,58 +24,19 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderThumb,
   RangeSliderTrack,
   useDisclosure,
 } from '@chakra-ui/react';
-import NoUpload from '@/components/utils/screens/NoUpload';
-// import FullScreenLoader from '../common/FullScreenLoader';
-import BrandLogo from '@/images/icons/BrandLogo';
-import BrandWordmark from '@/images/icons/BrandWordmark';
-import Hamburger from '@/images/icons/Hamburger';
-import AlphaTag from '@/images/tags/AlphaTag';
-import Upload from '@/lib/entities/upload';
-import File from '@/lib/entities/file';
+import NoUploadScreen from '@/components/utils/screens/NoUploadScreen';
+import { Upload } from '@/lib/entities/upload';
+import { useAuth } from '@/contexts/auth';
+import { useRouter } from 'next/router';
+import AuthorizedRoute from '@/components/utils/routes/Authorized';
 
-export async function getServerSideProps(ctx: any) {
-  try {
-    const cookies = nookies.get(ctx);
-    const token = await admin.auth().verifyIdToken(cookies.token);
-    let { uid, email } = token;
-    const uploads = await db.getUploadsByUser(uid);
-    const total_size =
-      uploads.reduce((acc, upload) => {
-        return acc + upload.size;
-      }, 0) / 1024;
-
-    return {
-      props: {
-        uploads: uploads,
-        total_size: total_size,
-      },
-    };
-  } catch (err) {
-    ctx.res.writeHead(302, { Location: '/login' });
-    ctx.res.end();
-    return {
-      props: {
-        uploads: [] as Upload[],
-        total_size: 0,
-      },
-    };
-  }
-}
-
-export interface IDashboard {
-  uploads: Upload[];
-  total_size: number;
-}
+export interface IDashboard {}
 
 const customStyles = {
   headRow: {
@@ -101,10 +52,25 @@ const customStyles = {
   },
 };
 
-const Dashboard: NextPageWithLayout<IDashboard> = ({ uploads, total_size }) => {
+const Dashboard: NextPageWithLayout<IDashboard> = () => {
+  const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // console.log('uploads', uploads);
-  // console.log('total_size', total_size);
+  const { user } = useAuth();
+  const [uploads, setUploads] = useState<Upload[]>([]);
+  const [total_size, setTotalSize] = useState<number>(0);
+
+  useEffect(() => {
+    if (user) {
+      db.getUploads(user.uid)
+        .then((uploads) => {
+          setUploads(uploads);
+          setTotalSize(uploads.reduce((a, b) => a + b.size, 0));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user]);
 
   const overviewColumns = [
     {
@@ -144,27 +110,12 @@ const Dashboard: NextPageWithLayout<IDashboard> = ({ uploads, total_size }) => {
       cell: (row: Upload) => row.size + ' GiB',
     },
   ];
-  //
-  // const fileViewColumns = [
-  //   {
-  //     name: 'FILE NAME',
-  //     selector: (row: File) => row.name,
-  //     sortable: true,
-  //     cell: (row: File) => row.name,
-  //   },
-  //   {
-  //     name: 'FILE SIZE',
-  //     selector: (row: File) => row.size,
-  //     sortable: true,
-  //     cell: (row: File) => row.size + ' GiB',
-  //   },
-  // ];
 
   const ExpandedComponentOverView = ({ data }: any) => (
     <div className="flex flex-row text-white">
       <button
         className="w-full bg-[#16181B]"
-        onClick={() => (window.location.href = '/dashboard/' + data.id)}
+        onClick={() => router.push('/files/' + data.id)}
       >
         Open File View
       </button>
@@ -180,22 +131,8 @@ const Dashboard: NextPageWithLayout<IDashboard> = ({ uploads, total_size }) => {
     </div>
   );
 
-  // const ExpandedComponentFileView = () => (
-  //   <div className="flex flex-row text-white">
-  //     <button
-  //       className="w-full bg-[#16181B]"
-  //       onClick={() =>
-  //         (window.location.href =
-  //           'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
-  //       }
-  //     >
-  //       File Retrieval Request
-  //     </button>
-  //   </div>
-  // );
-
   return (
-    <>
+    <AuthorizedRoute>
       {uploads.length > 0 ? (
         <>
           <div className="relative flex h-36">
@@ -214,10 +151,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = ({ uploads, total_size }) => {
                 variant="solid"
                 ml={4}
                 w={40}
-                onClick={() =>
-                  (window.location.href =
-                    'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
-                }
+                onClick={() => router.push('/upload-portal')}
               >
                 New Upload
               </Button>
@@ -324,89 +258,6 @@ const Dashboard: NextPageWithLayout<IDashboard> = ({ uploads, total_size }) => {
                         </Button>
                       </AccordionPanel>
                     </AccordionItem>
-
-                    {/*<AccordionItem>*/}
-                    {/*  <h2>*/}
-                    {/*    <AccordionButton className="border-t-2 border-t-black">*/}
-                    {/*      <Box*/}
-                    {/*        as="span"*/}
-                    {/*        flex="1"*/}
-                    {/*        textAlign="left"*/}
-                    {/*        className="font-bold mb-2 text-xs mt-2"*/}
-                    {/*      >*/}
-                    {/*        UPLOAD DATE*/}
-                    {/*      </Box>*/}
-                    {/*      <AccordionIcon />*/}
-                    {/*    </AccordionButton>*/}
-                    {/*  </h2>*/}
-                    {/*  <AccordionPanel pb={4}>*/}
-                    {/*    <Menu>*/}
-                    {/*      <MenuButton*/}
-                    {/*        as={Button}*/}
-                    {/*        rightIcon={<ChevronDownIcon />}*/}
-                    {/*        className="w-full text-left"*/}
-                    {/*        variant="outline"*/}
-                    {/*      >*/}
-                    {/*        Specific Range*/}
-                    {/*      </MenuButton>*/}
-                    {/*      <MenuList>*/}
-                    {/*        <MenuItem>Download</MenuItem>*/}
-                    {/*        <MenuItem>Create a Copy</MenuItem>*/}
-                    {/*        <MenuItem>Mark as Draft</MenuItem>*/}
-                    {/*        <MenuItem>Delete</MenuItem>*/}
-                    {/*        <MenuItem>Attend a Workshop</MenuItem>*/}
-                    {/*      </MenuList>*/}
-                    {/*    </Menu>*/}
-                    {/*    <div className="flex items-center gap-2 pt-4">*/}
-                    {/*      <div className="w-1/2">*/}
-                    {/*        <p className="text-[#00143140] text-xs">From</p>*/}
-                    {/*        <Input*/}
-                    {/*          placeholder="Select Date"*/}
-                    {/*          size="md"*/}
-                    {/*          type="date"*/}
-                    {/*        />*/}
-                    {/*      </div>*/}
-
-                    {/*      <div className="w-1/2">*/}
-                    {/*        <p className="text-[#00143140] text-xs">To</p>*/}
-                    {/*        <Input*/}
-                    {/*          placeholder="Select Date"*/}
-                    {/*          size="md"*/}
-                    {/*          type="date"*/}
-                    {/*        />*/}
-                    {/*      </div>*/}
-                    {/*    </div>*/}
-                    {/*    <Button colorScheme="blue" variant="link" size="xs">*/}
-                    {/*      Clear*/}
-                    {/*    </Button>*/}
-                    {/*  </AccordionPanel>*/}
-                    {/*</AccordionItem>*/}
-
-                    {/*<AccordionItem>*/}
-                    {/*  <h2>*/}
-                    {/*    <AccordionButton className="border-t-2 border-t-black">*/}
-                    {/*      <Box*/}
-                    {/*        as="span"*/}
-                    {/*        flex="1"*/}
-                    {/*        textAlign="left"*/}
-                    {/*        className="font-bold mb-2 text-xs mt-2"*/}
-                    {/*      >*/}
-                    {/*        COST-TO-DATE*/}
-                    {/*      </Box>*/}
-                    {/*      <AccordionIcon />*/}
-                    {/*    </AccordionButton>*/}
-                    {/*  </h2>*/}
-                    {/*  <AccordionPanel*/}
-                    {/*    pb={4}*/}
-                    {/*    className="border-b-2 border-b-black"*/}
-                    {/*  >*/}
-                    {/*    Lorem ipsum dolor sit amet, consectetur adipiscing elit,*/}
-                    {/*    sed do eiusmod tempor incididunt ut labore et dolore*/}
-                    {/*    magna aliqua. Ut enim ad minim veniam, quis nostrud*/}
-                    {/*    exercitation ullamco laboris nisi ut aliquip ex ea*/}
-                    {/*    commodo consequat.*/}
-                    {/*  </AccordionPanel>*/}
-                    {/*</AccordionItem>*/}
                   </Accordion>
                 </DrawerBody>
                 <DrawerFooter
@@ -433,9 +284,9 @@ const Dashboard: NextPageWithLayout<IDashboard> = ({ uploads, total_size }) => {
           />
         </>
       ) : (
-        <NoUpload />
+        <NoUploadScreen />
       )}
-    </>
+    </AuthorizedRoute>
   );
 };
 

@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userID} {
+      
+      function userIsOwner() {
+  	  	// Ensure the User ID matches the Auth UID
+      	return userID == request.auth.uid;
+	  }
+
+      // Ensure that the user document is allowed
+      function userIsValid() {
+        return userIsOwner() &&
+        // TODO: REGEX all fields
+        request.resource.data["companyName"] is string &&
+        request.resource.data["email"] is string &&
+        request.resource.data["fullName"] is string &&
+        request.resource.data["jobTitle"] is string &&
+        request.resource.data["phoneNumber"] is string 
+      }
+      
+      allow read: if userIsOwner();
+      allow write: if userIsValid();
+
+      match /uploads/{uploadID} {
+      
+      	// Ensure that the user document is allowed
+      	function uploadIsValid() {
+        	return userIsOwner() &&
+        	// TODO: REGEX all fields
+        	request.resource.data["name"] is string &&
+        	request.resource.data["size"] is number &&
+        	request.resource.data["status"] is number &&
+            request.resource.data["root"] is string &&
+        	request.resource.data["manifest"] is string
+      	}
+        
+        allow read: if userIsOwner();
+        allow write: if uploadIsValid();
+
+        match /files/{filePath} {
+
+          function fileIsValid() {
+            return userIsOwner() &&
+            // TODO: REGEX all fields
+            request.resource.data["path"] is string &&
+            request.resource.data["name"] is string &&
+            request.resource.data["size"] is number
+          }
+
+          allow read: if userIsOwner();
+          allow write: if fileIsValid();
+        }
+      }
+    } 
+  }
+}

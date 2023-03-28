@@ -1,5 +1,4 @@
 import BackgroundImage from '@/images/background/BackgroundImage';
-import Head from 'next/head';
 import styles from './PublicLayout.module.css';
 
 export interface IPublicLayout {}
@@ -11,7 +10,6 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
         <div className="h-full object-cover float-left">
           <BackgroundImage />
         </div>
-
         <main className={styles.main}>{children}</main>
       </div>
     </>

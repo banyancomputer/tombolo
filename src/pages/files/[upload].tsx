@@ -1,0 +1,172 @@
+import Head from 'next/head';
+import { NextPageWithLayout } from '@/pages/page';
+import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
+import { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import { Button } from '@chakra-ui/react';
+import { File } from '@/lib/entities/file';
+import NoFileScreen from '@/components/utils/screens/NoFileScreen';
+import { useAuth } from '@/contexts/auth';
+import { useRouter } from 'next/router';
+import { db, storage } from '@/lib/firebase/client';
+
+export interface IFileView {}
+
+const customStyles = {
+  headRow: {
+    style: {
+      borderTopWidth: '2px',
+      borderTopColor: '#000',
+      borderTopStyle: 'solid',
+      borderBottomWidth: '2px',
+      borderBottomColor: '#000',
+      borderBottomStyle: 'solid',
+      fontWeight: 700,
+    },
+  },
+};
+
+const FileView: NextPageWithLayout<IFileView> = ({}) => {
+  const { user } = useAuth();
+  const router = useRouter();
+  const [files, setFiles] = useState<File[]>([]);
+  const [total_size, setTotalSize] = useState<number>(0);
+  const [manifestUrl, setManifestUrl] = useState<string>('');
+
+  useEffect(() => {
+    // Get the upload ID from the URL. Its the last part of the URL
+    const upload_id = router.asPath.split('/').pop();
+    if (upload_id && user) {
+      // Get the uploads from the backend
+      db.getFiles(user?.uid, upload_id).then((files) => {
+        console.log(files);
+        // Set the files
+        setFiles(files);
+        // Calculate the total size of the upload
+        let total_size = 0;
+        files.forEach((file) => {
+          total_size += file.size;
+        });
+        // Set the total size in TB
+        setTotalSize(total_size / 1024);
+        console.log('upload_id: ', upload_id);
+      });
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    // Get the upload ID from the URL. Its the last part of the URL
+    const upload_id = router.asPath.split('/').pop();
+    if (upload_id && user) {
+      // Get the uploads from the backend
+      storage
+        .getManifestUrl(user?.uid, upload_id)
+        .then((manifest) => {
+          console.log(manifest);
+          // Set the files
+          setManifestUrl(manifest);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user, router]);
+
+  const fileViewColumns = [
+    {
+      name: 'FILE NAME',
+      selector: (row: File) => row.name,
+      sortable: true,
+      cell: (row: File) => row.name,
+    },
+    {
+      name: 'FILE SIZE',
+      selector: (row: File) => row.size,
+      sortable: true,
+      cell: (row: File) => row.size + ' GiB',
+    },
+  ];
+
+  const ExpandedComponentFileView = () => (
+    <div className="flex flex-row text-white">
+      <button
+        className="w-full bg-[#16181B]"
+        onClick={() =>
+          (window.location.href =
+            'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
+        }
+      >
+        File Retrieval Request
+      </button>
+    </div>
+  );
+
+  // @ts-ignore
+  return (
+    <>
+      {files.length > 0 ? (
+        <>
+          <div className="relative flex h-36">
+            <div className="w-full border-r-2 border-r-[#000] p-4">
+              Total Upload Size
+              <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
+                {total_size} TiB
+              </div>
+            </div>
+            <div className="w-full border-r-2 border-r-[#000] p-4">
+              Number of Files
+              <div className="absolute bottom-0 font-medium text-xl mb-2">
+                {files.length}
+              </div>
+            </div>
+          </div>
+          <div className="border-t-2 border-t-[#000] pb-44">
+            <div className="flex mt-4">
+              {/* @ts-ignore */}
+              <Button
+                ml={4}
+                colorScheme="blue"
+                variant="solid"
+                onClick={() => router.push('/') /* change to dashboard */}
+              >
+                <ArrowBackIcon />
+                All Uploads
+              </Button>
+            </div>
+            <div className="flex mt-4">
+              {/* @ts-ignore */}
+              <Button
+                ml={4}
+                colorScheme="blue"
+                variant="solid"
+                onClick={
+                  // Download from the manifest URL
+                  () => window.open(manifestUrl, '_blank')
+                }
+              >
+                {/*<ArrowBackIcon />*/}
+                Download Manifest
+              </Button>
+            </div>
+          </div>
+          <DataTable
+            columns={fileViewColumns}
+            data={files} // for alex: change to file data
+            customStyles={customStyles}
+            expandableRows
+            expandableRowsComponent={ExpandedComponentFileView}
+          />
+        </>
+      ) : (
+        <NoFileScreen />
+      )}
+    </>
+  );
+};
+
+export default FileView;
+
+FileView.getLayout = (page) => {
+  return <AuthedLayout>{page}</AuthedLayout>;
+};

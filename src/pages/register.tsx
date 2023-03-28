@@ -1,11 +1,12 @@
 import { useRouter } from 'next/router';
-import { auth } from '@/lib/firebase/client';
+import { auth, db } from '@/lib/firebase/client';
 import { useAuth } from '@/contexts/auth';
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { NextPageWithLayout } from '@/pages/page';
 import LoadingSpinner from '@/components/utils/spinners/loading/LoadingSpinner';
 import PublicLayout from '@/components/layouts/public/PublicLayout';
+import PublicRoute from '@/components/utils/routes/Public';
 // import validator from 'validator';
 
 const Register: NextPageWithLayout = ({}) => {
@@ -53,11 +54,6 @@ const Register: NextPageWithLayout = ({}) => {
       handleCheckPassword(e);
     }
 
-    // // Check if the confirm password is valid
-    // if (id === 'confirmPassword') {
-    //   handleCheckPassword(e);
-    // }
-
     // Check if phone number is valid
     if (id === 'phoneNumber') {
       handleCheckPhoneNumber(e);
@@ -88,58 +84,35 @@ const Register: NextPageWithLayout = ({}) => {
 
   const handleSignUpUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Signing up user');
     // First, create the user with the client side firebase auth
-    const uid = await auth
+    await auth
       .signUp(values.email, values.password)
+      .then((uid) => {
+        console.log('User created with firebase auth: ', uid);
+        // Register the user with client side firebase auth
+        db.registerUser(
+          uid,
+          values.email,
+          values.fullName,
+          values.companyName,
+          values.jobTitle,
+          values.phoneNumber
+        )
+          .then(() => {
+            console.log('User registered with firebase db');
+            router.push('/');
+          })
+          .catch((err) => {
+            console.log('Could not register user with firebase db: ', err);
+            setError(err.message);
+            return null;
+          });
+      })
       .catch((err) => {
         console.log('Could not create user with firebase auth: ', err);
         setError(err.message);
         return null;
-      });
-
-    if (!uid) {
-      return;
-    }
-
-    console.log('Created new user with uid:', uid);
-
-    // Log the user in with the client side firebase auth
-    await auth.signInDefault(values.email, values.password).catch((err) => {
-      setError(err.message);
-      return;
-    });
-
-    const user = {
-      uid: uid,
-      email: values.email,
-      fullName: values.fullName,
-      companyName: values.companyName,
-      jobTitle: values.jobTitle,
-      phoneNumber: values.phoneNumber,
-    };
-
-    // Get the token from the client side firebase auth
-    const token = await auth.getToken().catch((err) => {
-      setError(err.message);
-    });
-
-    await fetch('/api/registerUser', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `${token}`,
-      },
-      body: JSON.stringify(user),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          router.push('/');
-        } else {
-          setError('Could not register user: ' + res.status);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
       });
   };
 
@@ -157,137 +130,111 @@ const Register: NextPageWithLayout = ({}) => {
     );
   }, [values, emailValid, passwordValid, phoneNumberValid]);
 
-  if (userLoading) {
-    return <LoadingSpinner />;
-  } else if (user && typeof window !== 'undefined') {
-    router.push('/');
-    return null;
-  }
   return (
     <div>
-      <div className="text-2xl font-medium align-left">Sign Up</div>
-      <div className="text-sm font-medium align-left">
-        Already have an account?{' '}
-        <Link href="/login" className={`text-blue-500`}>
-          Log in
-        </Link>
-      </div>
-      <form
-        onSubmit={handleSignUpUser}
-        className="w-full p-6 rounded bg-base-content text-base-100"
-      >
-        <h2 className="mb-2 text-sm font-semibold">Email</h2>
-        <div className="relative">
-          <input
-            id="email"
-            type="text"
-            placeholder="me@here.com"
-            className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-              emailValid ? '!border-blue-300' : '!border-orange-400'
-            }`}
-            onInput={handleValueChange}
-          />
+      <PublicRoute>
+        <div className="text-2xl font-medium align-left">Sign Up</div>
+        <div className="text-sm font-medium align-left">
+          Already have an account?{' '}
+          <Link href="/login" className={`text-blue-500`}>
+            Log in
+          </Link>
         </div>
-        <h2 className="mt-4 mb-2 text-sm font-semibold">Password</h2>
-        <div className="relative">
-          <input
-            id="password"
-            type="password"
-            placeholder="********"
-            className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-              passwordValid ? '!border-blue-300' : '!border-orange-400'
-            }
+        <form
+          onSubmit={handleSignUpUser}
+          className="w-full p-6 rounded bg-base-content text-base-100"
+        >
+          <h2 className="mb-2 text-sm font-semibold">Email</h2>
+          <div className="relative">
+            <input
+              id="email"
+              type="text"
+              placeholder="me@here.com"
+              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
+                emailValid ? '!border-blue-300' : '!border-orange-400'
+              }`}
+              onInput={handleValueChange}
+            />
+          </div>
+          <h2 className="mt-4 mb-2 text-sm font-semibold">Password</h2>
+          <div className="relative">
+            <input
+              id="password"
+              type="password"
+              placeholder="********"
+              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
+                passwordValid ? '!border-blue-300' : '!border-orange-400'
+              }
                     `}
-            onInput={handleValueChange}
-          />
-        </div>
-        {/*<h2 className="mt-4 mb-2 text-sm font-semibold">Confirm Password</h2>*/}
-        {/*<div className="relative">*/}
-        {/*  <input*/}
-        {/*    id="confirmPassword"*/}
-        {/*    type="password"*/}
-        {/*    placeholder="********"*/}
-        {/*    className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${*/}
-        {/*      passwordValid ? '!border-blue-300' : '!border-orange-400'*/}
-        {/*    }*/}
-        {/*            `}*/}
-        {/*    onInput={handleValueChange}*/}
-        {/*  />*/}
-        {/*</div>*/}
-        <h2 className="mt-4 mb-2 text-sm font-semibold">Full Name</h2>
-        <div className="relative">
-          <input
-            id="fullName"
-            type="text"
-            placeholder="John Doe"
-            className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block
+              onInput={handleValueChange}
+            />
+          </div>
+          <h2 className="mt-4 mb-2 text-sm font-semibold">Full Name</h2>
+          <div className="relative">
+            <input
+              id="fullName"
+              type="text"
+              placeholder="John Doe"
+              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block
                    
                         `}
-            onInput={handleValueChange}
-          />
-        </div>
-        <h2 className="mt-4 mb-2 text-sm font-semibold">Company Name</h2>
-        <div className="relative">
-          <input
-            id="companyName"
-            type="text"
-            placeholder="Company Name"
-            className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block`}
-            onInput={handleValueChange}
-          />
-        </div>
-        <h2 className="mt-4 mb-2 text-sm font-semibold">Job Title</h2>
-        <div className="relative">
-          <input
-            id="jobTitle"
-            type="text"
-            placeholder="Job Title"
-            className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block`}
-            onInput={handleValueChange}
-          />
-        </div>
-        <h2 className="mt-4 mb-2 text-sm font-semibold">Phone Number</h2>
-        <div className="relative">
-          <input
-            id="phoneNumber"
-            type="text"
-            placeholder="Phone Number"
-            className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
-              phoneNumberValid ? '!border-blue-300' : '!border-orange-400'
-            }
+              onInput={handleValueChange}
+            />
+          </div>
+          <h2 className="mt-4 mb-2 text-sm font-semibold">Company Name</h2>
+          <div className="relative">
+            <input
+              id="companyName"
+              type="text"
+              placeholder="Company Name"
+              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block`}
+              onInput={handleValueChange}
+            />
+          </div>
+          <h2 className="mt-4 mb-2 text-sm font-semibold">Job Title</h2>
+          <div className="relative">
+            <input
+              id="jobTitle"
+              type="text"
+              placeholder="Job Title"
+              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block`}
+              onInput={handleValueChange}
+            />
+          </div>
+          <h2 className="mt-4 mb-2 text-sm font-semibold">Phone Number</h2>
+          <div className="relative">
+            <input
+              id="phoneNumber"
+              type="text"
+              placeholder="Phone Number"
+              className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${
+                phoneNumberValid ? '!border-blue-300' : '!border-orange-400'
+              }
                         `}
-            onInput={handleValueChange}
-          />
-        </div>
+              onInput={handleValueChange}
+            />
+          </div>
 
-        {error && (
-          // Error when login fails
-          <label htmlFor="registration" className="label">
-            <span className="text-xxs !p-0 text-error text-left">
-              There was an issue with your registration: {error}
-            </span>
-          </label>
-        )}
+          {error && (
+            // Error when login fails
+            <label htmlFor="registration" className="label">
+              <span className="text-xxs !p-0 text-error text-left">
+                There was an issue with your registration: {error}
+              </span>
+            </label>
+          )}
 
-        <div className="flex items-center mt-4">
-          <button
-            className="ml-2 !h-[52px] flex-1 btn btn-primary disabled:opacity-50 disabled:border-neutral-900 disabled:text-neutral-900"
-            disabled={buttonDisabled}
-            type="submit"
-          >
-            Sign Up
-          </button>
-        </div>
-      </form>
-
-      {/*/!* Password Reset Email *!/*/}
-      {/*<div className="text-sm text-center">*/}
-      {/*  <Link href="/recover">*/}
-      {/*    <div className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">*/}
-      {/*      Forgot your password?*/}
-      {/*    </div>*/}
-      {/*  </Link>*/}
-      {/*</div>*/}
+          <div className="flex items-center mt-4">
+            <button
+              className="ml-2 !h-[52px] flex-1 btn btn-primary disabled:opacity-50 disabled:border-neutral-900 disabled:text-neutral-900"
+              disabled={buttonDisabled}
+              type="submit"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
+      </PublicRoute>
     </div>
   );
 };
@@ -295,10 +242,5 @@ const Register: NextPageWithLayout = ({}) => {
 export default Register;
 
 Register.getLayout = (page) => {
-  return (
-    <PublicLayout>
-      {/*<SidebarLayout />*/}
-      {page}
-    </PublicLayout>
-  );
+  return <PublicLayout>{page}</PublicLayout>;
 };
