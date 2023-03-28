@@ -31,9 +31,8 @@ switch (args[0]) {
     getUserByEmail(email)
       .then((user) => {
         console.log('-> User ID', user.id);
-        _user = user;
         // Initialize the upload
-        const upload = initializeUpload(user.id, name)
+        initializeUpload(user.id, name)
           .then((upload) => {
             console.log('Created Upload with ID', upload.id);
             console.log(
@@ -98,7 +97,7 @@ switch (args[0]) {
               if (!status) {
                 console.log('Upload does not exist');
                 return;
-              } else if (status != 1) {
+              } else if (status != 0) {
                 console.log('Upload is not in the correct state: ', status);
                 return;
               }
@@ -171,7 +170,7 @@ switch (args[0]) {
           if (!status) {
             console.log('Upload does not exist');
             return;
-          } else if (status != 3) {
+          } else if (status != 2) {
             console.log('Upload is not in the correct state: ', status);
             return;
           }
@@ -201,7 +200,7 @@ switch (args[0]) {
           if (!status) {
             console.log('Upload does not exist');
             return;
-          } else if (status !== 4) {
+          } else if (status !== 3) {
             console.log('Upload is not in the correct state: ', status);
             return;
           }

@@ -67,7 +67,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
       db.getUploads(user.uid)
         .then((uploads) => {
           setUploads(uploads);
-          setTotalSize(uploads.reduce((a, b) => a + b.size, 0));
+          setTotalSize(uploads.reduce((a, b) => a + b.size, 0) / 1024);
         })
         .catch((err) => {
           console.log(err);
@@ -112,15 +112,6 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
     },
   ];
 
-  const data = [
-    {
-      id: '1',
-      name: 'pet-pics',
-      size: 123,
-      status: 0,
-      root: 'root',
-    },
-  ];
   const ExpandedComponentOverView = ({ data }: any) => (
     <div className="flex flex-row text-white">
       <button
@@ -290,29 +281,29 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                       </AccordionPanel>
                     </AccordionItem>
 
-                    <AccordionItem>
-                      <h2>
-                        <AccordionButton className="border-t-2 border-t-black">
-                          <Box
-                            as="span"
-                            flex="1"
-                            textAlign="left"
-                            className="font-bold mb-2 text-xs mt-2"
-                          >
-                            UPLOAD SIZE
-                          </Box>
-                          <AccordionIcon />
-                        </AccordionButton>
-                      </h2>
-                      <AccordionPanel pb={4}>
-                        <div className="flex flex-col gap-1">
-                          <Checkbox>less than 10TiB</Checkbox>
-                          <Checkbox>10-1000TiB</Checkbox>
-                          <Checkbox>1001-99999TiB</Checkbox>
-                          <Checkbox>more than 10000TiB</Checkbox>
-                        </div>
-                      </AccordionPanel>
-                    </AccordionItem>
+                    {/*<AccordionItem>*/}
+                    {/*  <h2>*/}
+                    {/*    <AccordionButton className="border-t-2 border-t-black">*/}
+                    {/*      <Box*/}
+                    {/*        as="span"*/}
+                    {/*        flex="1"*/}
+                    {/*        textAlign="left"*/}
+                    {/*        className="font-bold mb-2 text-xs mt-2"*/}
+                    {/*      >*/}
+                    {/*        UPLOAD SIZE*/}
+                    {/*      </Box>*/}
+                    {/*      <AccordionIcon />*/}
+                    {/*    </AccordionButton>*/}
+                    {/*  </h2>*/}
+                    {/*  <AccordionPanel pb={4}>*/}
+                    {/*    <div className="flex flex-col gap-1">*/}
+                    {/*      <Checkbox>less than 10TiB</Checkbox>*/}
+                    {/*      <Checkbox>10-1000TiB</Checkbox>*/}
+                    {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
+                    {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
+                    {/*    </div>*/}
+                    {/*  </AccordionPanel>*/}
+                    {/*</AccordionItem>*/}
                   </Accordion>
                 </DrawerBody>
                 <DrawerFooter

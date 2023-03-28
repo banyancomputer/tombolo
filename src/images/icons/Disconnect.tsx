@@ -7,8 +7,8 @@ const Disconnect = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M6.10407 13.5001C5.48044 13.5001 5.16812 14.2541 5.6091 14.6951L8.70701 17.793L7.2928 19.2072L0.585693 12.5001L7.2928 5.79297L8.70701 7.20718L5.6091 10.3051C5.16812 10.7461 5.48044 11.5001 6.10407 11.5001H17.9999V13.5001H6.10407Z"
       fill="#16181B"
     />

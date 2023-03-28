@@ -20,7 +20,7 @@ import {
 import { NextPageWithLayout } from '@/pages/page';
 import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
 import { useAuth } from '@/contexts/auth';
-import { db } from '@/lib/firebase/client';
+import { auth, db } from '@/lib/firebase/client';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import { useEffect, useState } from 'react';
 import { User } from '@/lib/entities/user';
@@ -29,6 +29,8 @@ import LoadingScreen from '@/components/utils/screens/LoadingScreen';
 const Account: NextPageWithLayout = ({}) => {
   const { user } = useAuth();
   const [userData, setUserData] = useState<User | null>(null);
+  const [newEmail, setNewEmail] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -42,6 +44,35 @@ const Account: NextPageWithLayout = ({}) => {
   if (!userData) {
     return <LoadingScreen />;
   }
+
+  const handleNewEmail = () => {
+    if (user) {
+      auth
+        .updateEmail(newEmail)
+        .then(() => {
+          console.log('Updated email in auth');
+          db.updateUserEmail(user.uid, newEmail)
+            .then(() => {
+              console.log('Updated email in db');
+              // Copy User Data
+              const newUserData = { ...userData };
+              // Update email
+              newUserData.email = newEmail;
+              // Set new user data
+              setUserData(newUserData);
+              onClose();
+            })
+            .catch((err) => {
+              console.log(err);
+              setError(err.message);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err.message);
+        });
+    }
+  };
 
   return (
     <div>
@@ -67,25 +98,32 @@ const Account: NextPageWithLayout = ({}) => {
                       <input
                         id="email"
                         type="text"
-                        placeholder="E-mail"
+                        placeholder="New E-mail"
                         className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3`}
-                        onInput={() => console.log('hello')}
+                        onChange={(e) => {
+                          setNewEmail(e.target.value);
+                        }}
                       />
-                      <Divider borderColor="#000" borderWidth="1px" />
-                      <input
-                        id="email"
-                        type="text"
-                        placeholder="Enter password to confirm"
-                        className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
-                        onInput={() => console.log('hello')}
-                      />{' '}
+                      {/*<Divider borderColor="#000" borderWidth="1px" />*/}
+                      {/*<input*/}
+                      {/*  id="email"*/}
+                      {/*  type="text"*/}
+                      {/*  placeholder="Enter password to confirm"*/}
+                      {/*  className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}*/}
+                      {/*/>{' '}*/}
+                      {error && (
+                        <div className="flex text-red-500">{error}</div>
+                      )}
                     </Stack>
                   </ModalBody>
                   <ModalFooter>
                     <Button
                       colorScheme="black"
                       mr={3}
-                      onClick={onClose}
+                      onClick={() => {
+                        onClose();
+                        setError('');
+                      }}
                       variant="outline"
                       fontWeight="medium"
                       borderWidth="2px"
@@ -97,6 +135,9 @@ const Account: NextPageWithLayout = ({}) => {
                       textColor="#00143173"
                       bg="#CED6DE"
                       fontWeight="medium"
+                      onClick={() => {
+                        handleNewEmail();
+                      }}
                     >
                       Save
                     </Button>

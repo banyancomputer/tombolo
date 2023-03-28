@@ -9,9 +9,8 @@ export interface IUpload {
   // Status of the upload.
   // 0: Requested
   // 1: Prepping
-  // 2: Uploading
-  // 3: Stored
-  // 4: Terminated
+  // 2: Stored
+  // 3: Terminated
   status: number;
   // Root directory of the upload.
   root: string;
