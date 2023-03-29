@@ -1,7 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Tombolo
+This repository describes a Next.js project that is deployed to Vercel.
+It is supported with a Firebase backend.
+It implements a simple key manager meant to be used with the `dataprep` tool.
 
-## Getting Started
+# Dependencies
+- `node` (v14.17.0)
+- `yarn` (v1.22.10)
+- `firebase-cli` (v9.16.0)
 
+To install the dependencies, run:
+```bash
+yarn install
+```
+
+# Configuration
+## Firebase
+In order to use firebase tools, you need to initialize the firebase project.
+To do so, run:
+```bash
+cd firebase
+firebase init
+```
+
+There are two firebase projects, one for development and one for production.
+You can target different porjects by appending `--project <project-name>` to the `firebase` commands.
+
+# Development
+You shouldn't need to configure anything to run the project locally.
+If you initi
 First, run the development server:
 
 ```bash

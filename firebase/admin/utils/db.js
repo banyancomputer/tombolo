@@ -4,25 +4,46 @@ const User = require('../entities/user');
 const firebaseAdmin = require('../client');
 
 // Admin DB utils
+// Used for interacting with the Firestore database using the admin SDK and a Service Account
 
-// Upload Management
+/*
+ * Upload Management
+ */
 
-// Initialize a new upload for a user and with a given name
-// Returns the upload object
+/*
+ * initializeUpload
+ * Creates a new upload in Firestore and returns an Upload object
+ * @param {string} uid - The user id of the user who owns the upload
+ * @param {string} name - The name of the upload
+ * @returns {Upload} - The upload object
+ * @throws {Error} - If the upload could not be created
+ */
 async function initializeUpload(uid, name) {
   const upload = new Upload.Upload(name);
-  await createUpload(uid, upload);
-  return upload;
+  return createUpload(uid, upload)
+    .then(() => {
+      return upload;
+    })
+    .catch((err) => {
+      throw err;
+    });
 }
 
-// Update the status of an upload
-// 0 -> Upload Requested
-// 1 -> Dataprep Started
-// 2 -> Dataprep Complete, Scheduled for Upload
-// 3 -> Uploaded and stored on Filecoin
-// 4 -> Terminated
+/*
+ * Update the status of an upload
+ * Statuses:
+ * 0 - Initialized
+ * 1 - Data Prepared
+ * 2 - Stored
+ * 3 - Deleted
+ * @param {string} uid - The user id of the user who owns the upload
+ * @param {string} uploadId - The id of the upload
+ * @param {number} status - The status to update to
+ * @returns {void}
+ * @throws {Error} - If the status is invalid
+ */
 async function updateUploadStatus(uid, uploadId, status) {
-  if (status < 0 || status > 4) {
+  if (status < 0 || status > 3) {
     throw new Error('Invalid status');
   }
   const database = firebaseAdmin.firestore();
@@ -30,11 +51,18 @@ async function updateUploadStatus(uid, uploadId, status) {
   await uploadRef.doc(uploadId).update({ status: status });
 }
 
-// Update the details of an upload
-// Main details we want to update are:
-// - size
-// - root
-// - manifest
+/*
+ * Update the details of an upload related to the data it specifies
+ * @param {string} uid - The user id of the user who owns the upload
+ * @param {string} uploadId - The id of the upload
+ * @param {object} details - The details to update. Of the form:
+ * {
+ *  size: number,
+ *  root: string,
+ *  manifest: string
+ * }
+ * @returns {void}
+ */
 async function updateUploadDetails(uid, uploadId, details) {
   // Validate details
   if (!details.size || !details.root || !details.manifest) {
@@ -43,22 +71,6 @@ async function updateUploadDetails(uid, uploadId, details) {
   const database = firebaseAdmin.firestore();
   const uploadRef = database.collection('users/' + uid + '/uploads');
   await uploadRef.doc(uploadId).update(details);
-}
-
-// User Management
-
-// Get a user by their email
-async function getUserByEmail(email) {
-  const database = firebaseAdmin.firestore();
-  const usersRef = database.collection('users');
-  const userQuery = usersRef.where('email', '==', email).limit(1);
-  return await userQuery.get().then((querySnapshot) => {
-    if (querySnapshot.empty) {
-      return null;
-    }
-    const userDoc = querySnapshot.docs[0];
-    return new User.User(userDoc.id, userDoc.data());
-  });
 }
 
 // Check if an upload exists for a user. If it exists return the status
@@ -91,15 +103,51 @@ async function deleteUpload(uid, uploadId) {
   });
 }
 
-// Add a file to an upload
-async function addFileToUpload(uid, uploadId, file) {
+/*
+ * User Management
+ */
+
+/*
+ * getUserByEmail
+ * Gets a user by their email
+ * @param {string} email - The email of the user
+ * @returns {User} - The user object
+ */
+async function getUserByEmail(email) {
+  const database = firebaseAdmin.firestore();
+  const usersRef = database.collection('users');
+  const userQuery = usersRef.where('email', '==', email).limit(1);
+  return await userQuery.get().then((querySnapshot) => {
+    if (querySnapshot.empty) {
+      return null;
+    }
+    const userDoc = querySnapshot.docs[0];
+    return new User.User(userDoc.id, userDoc.data());
+  });
+}
+
+/*
+ * File Management
+ */
+
+/*
+ * addFileToUpload
+ * Adds a file to an upload
+ * @param {string} uid - The user id of the user who owns the upload
+ * @param {string} uploadId - The id of the upload
+ * @param {File} file - The file to add
+ */
+async function addFile(uid, uploadId, file) {
   const database = firebaseAdmin.firestore();
   const uploadRef = database.collection('users/' + uid + '/uploads');
-  await uploadRef
+  uploadRef
     .doc(uploadId)
     .collection('files')
     .doc(file.id)
-    .set(File.fileConverter.toFirestore(file));
+    .set(File.fileConverter.toFirestore(file))
+    .catch((err) => {
+      throw err;
+    });
 }
 
 module.exports = {
@@ -107,16 +155,22 @@ module.exports = {
   initializeUpload,
   updateUploadDetails,
   updateUploadStatus,
-  addFileToUpload,
+  addFile,
   uploadExists,
   deleteUpload,
 };
 
+/* Helper functions */
+
+// Create an upload Document in Firestore
 async function createUpload(uid, upload) {
   const database = firebaseAdmin.firestore();
   const uploadRef = database.collection('users/' + uid + '/uploads');
   console.log(Upload.uploadConverter.toFirestore(upload));
   await uploadRef
     .doc(upload.id)
-    .set(Upload.uploadConverter.toFirestore(upload));
+    .set(Upload.uploadConverter.toFirestore(upload))
+    .catch((err) => {
+      throw err;
+    });
 }

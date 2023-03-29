@@ -1,0 +1,17 @@
+{
+  "name": "manifests/shOIhS0Y9yDLseLr1TV50w40Zfup/987f1b990e5/manifest.json",
+  "bucket": "tombolo-dev-bb188.appspot.com",
+  "metageneration": 2,
+  "generation": 1680033718786,
+  "contentType": "application/json",
+  "storageClass": "STANDARD",
+  "downloadTokens": [
+    "40a7d510-9725-4e77-b7b1-034e678ba602"
+  ],
+  "etag": "q37qWWih6PL1xm9K5Zha6tDTe0s",
+  "timeCreated": "2023-03-28T20:01:58.786Z",
+  "updated": "2023-03-28T20:04:44.161Z",
+  "size": 4253,
+  "md5Hash": "3bw7ju/iLAJDg+rlEgyCsw==",
+  "crc32c": "844360649"
+}

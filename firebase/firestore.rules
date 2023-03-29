@@ -38,7 +38,7 @@ service cloud.firestore {
         allow read: if userIsOwner();
         allow write: if uploadIsValid();
 
-        match /files/{filePath} {
+        match /files/{fileId} {
 
           function fileIsValid() {
             return userIsOwner() &&

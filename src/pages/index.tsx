@@ -61,13 +61,14 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
   const [total_size, setTotalSize] = useState<number>(0);
   const [statusFilter, setStatusFilter] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showStuff, setShowStuff] = useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
       db.getUploads(user.uid)
         .then((uploads) => {
           setUploads(uploads);
-          setTotalSize(uploads.reduce((a, b) => a + b.size, 0) / 1024);
+          setTotalSize(uploads.reduce((a, b) => a + b.size, 0));
         })
         .catch((err) => {
           console.log(err);
@@ -108,7 +109,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
       name: 'UPLOAD SIZE',
       selector: (row: Upload) => row.size,
       sortable: true,
-      cell: (row: Upload) => row.size + ' GiB',
+      cell: (row: Upload) => row.size + ' TiB',
     },
   ];
 
@@ -152,7 +153,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
 
   return (
     <AuthorizedRoute>
-      {uploads.length > 0 ? (
+      {uploads.length > 0 && showStuff ? (
         <>
           <div className="relative flex h-36">
             <div className="w-full border-r-2 border-r-[#000] p-4">
@@ -334,7 +335,16 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
           />
         </>
       ) : (
-        <NoUploadScreen />
+        //   Create a hidden button that changes color on hover
+        <>
+          <Button
+            onClick={() => setShowStuff(true)}
+            className="hidden bg-[#FAFAFA]"
+            _hover={{ bg: 'black' }}
+            _focus={{ bg: 'black' }}
+          ></Button>
+          <NoUploadScreen />
+        </>
       )}
     </AuthorizedRoute>
   );

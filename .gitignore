@@ -6,9 +6,6 @@
 # Secrets and config
 .env
 .env.local
-.env.development
-.env.test
-.env.production
 
 # dependencies
 /node_modules

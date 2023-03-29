@@ -6,7 +6,7 @@ const {
   initializeUpload,
   getUserByEmail,
   updateUploadStatus,
-  addFileToUpload,
+  addFile,
   updateUploadDetails,
   uploadExists,
   deleteUpload,
@@ -20,6 +20,11 @@ let email, name, uploadId, status, manifest_path;
 
 // Switch based on command
 switch (args[0]) {
+  /*
+   * Initialize an upload
+   * Usage: node cli.js initialize-upload <email> <name>
+   * Creates an upload in the database
+   */
   case 'initialize-upload':
     console.log('Initializing upload');
     // Get the email and name from the command line
@@ -51,6 +56,10 @@ switch (args[0]) {
         console.log('User not found. Did you specify the correct email?');
       });
     break;
+  /*
+   * Update an upload's upload status
+   * Usage: node cli.js update-upload-status <email> <uploadId> <status>
+   */
   case 'update-upload-status':
     console.log('Updating upload status');
     // Get the user email, upload ID, and status from the command line
@@ -77,6 +86,12 @@ switch (args[0]) {
         console.log('User not found. Did you specify the correct email?');
       });
     break;
+  /*
+   * Import a manifest into an upload
+   * Usage: node cli.js import-manifest <email> <uploadId> <manifest_path>
+   * Processes the manifest and adds the files to the upload
+   * Uploads the manifest to the storage bucket
+   */
   case 'import-manifest':
     console.log('Importing manifest');
     // Get the user email, upload ID, and manifest path from the command line
@@ -129,7 +144,7 @@ switch (args[0]) {
               // Add each file to the upload
               files.forEach((file) => {
                 requests.push(
-                  addFileToUpload(user.id, uploadId, file).then(() => {
+                  addFile(user.id, uploadId, file).then(() => {
                     console.log('Added file to upload: ', file.name);
                   })
                 );

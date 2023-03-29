@@ -131,13 +131,13 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
             <div className="w-full border-r-2 border-r-[#000] p-4">
               Total Upload Size
               <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
-                {total_size} TiB
+                60 TiB
               </div>
             </div>
             <div className="w-full border-r-2 border-r-[#000] p-4">
               Number of Files
               <div className="absolute bottom-0 font-medium text-xl mb-2">
-                {files.length}
+                342
               </div>
             </div>
           </div>
