@@ -21,13 +21,14 @@ export async function registerUser(
 ) {
   // Create /users/{uid} document in Firestore
   const userRef = collection(client.db, 'users');
-  await setDoc(doc(userRef, uid), {
+  let set = {
     email: email,
     fullName: fullName,
     companyName: companyName,
     jobTitle: jobTitle,
     phoneNumber: phoneNumber,
-  });
+  };
+  await setDoc(doc(userRef, uid), set);
 }
 
 export async function updateUserEmail(uid: string, email: string) {
