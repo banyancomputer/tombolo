@@ -41,7 +41,7 @@ export interface Client {
   analytics: any;
 }
 
-const app = initializeApp(firebaseConfig, 'tombolo-client');
+const app = initializeApp(firebaseConfig);
 const app_db = getFirestore(app);
 const app_storage = getStorage(app);
 let _analytics;
