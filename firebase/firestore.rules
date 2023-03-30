@@ -25,31 +25,33 @@ service cloud.firestore {
       match /uploads/{uploadID} {
       
       	// Ensure that the user document is allowed
-      	function uploadIsValid() {
-        	return userIsOwner() &&
-        	// TODO: REGEX all fields
-        	request.resource.data["name"] is string &&
-        	request.resource.data["size"] is number &&
-        	request.resource.data["status"] is number &&
-            request.resource.data["root"] is string &&
-        	request.resource.data["manifest"] is string
-      	}
+      	//function uploadIsValid() {
+        //	return userIsOwner() &&
+        //	// TODO: REGEX all fields
+        //	request.resource.data["name"] is string &&
+        //	request.resource.data["size"] is number &&
+        //	request.resource.data["status"] is number &&
+        //  request.resource.data["root"] is string &&
+        //	request.resource.data["manifest"] is string
+      	//}
         
         allow read: if userIsOwner();
-        allow write: if uploadIsValid();
+        // Don't allow write to the upload document right now
+        // allow write: if uploadIsValid();
 
         match /files/{filePath} {
 
-          function fileIsValid() {
-            return userIsOwner() &&
-            // TODO: REGEX all fields
-            request.resource.data["path"] is string &&
-            request.resource.data["name"] is string &&
-            request.resource.data["size"] is number
-          }
+          //function fileIsValid() {
+          // return userIsOwner() &&
+          // TODO: REGEX all fields
+          // request.resource.data["path"] is string &&
+          // request.resource.data["name"] is string &&
+          // request.resource.data["size"] is number
+          //}
 
           allow read: if userIsOwner();
-          allow write: if fileIsValid();
+          // Don't allow write to the file document right now
+          // allow write: if fileIsValid();
         }
       }
     } 

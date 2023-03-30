@@ -140,4 +140,7 @@ You can deploy the Firebase project to production using the following command:
 cd firebase
 firebase deploy
 ```
+You should only be able to do that if you are me
+We will only ever deploy when were are sure something is ready to be deployed.
+- Alex
 
