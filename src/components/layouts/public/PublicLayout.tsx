@@ -1,5 +1,4 @@
 import BackgroundImage from '@/images/background/BackgroundImage';
-import Head from 'next/head';
 import styles from './PublicLayout.module.css';
 
 export interface IPublicLayout {}
@@ -7,11 +6,10 @@ export interface IPublicLayout {}
 const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
   return (
     <>
-      <div className="fixed h-screen w-full flex">
-        <div className="h-full object-cover float-left">
+      <div className="fixed h-screen w-full ">
+        <div className="float-left flex justify-center items-center h-screen">
           <BackgroundImage />
         </div>
-
         <main className={styles.main}>{children}</main>
       </div>
     </>

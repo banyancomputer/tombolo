@@ -12,6 +12,7 @@ import DealPortalIcon from '@/images/icons/DealPortalIcon';
 import Account from '@/images/icons/Account';
 import Support from '@/images/icons/Support';
 import Disconnect from '@/images/icons/Disconnect';
+import { useAuth } from '@/contexts/auth';
 
 const navItemsUpper = [
   {
@@ -31,20 +32,8 @@ const navItemsUpper = [
   },
   {
     label: 'Support',
-    href: 'https://discord.gg/PVeg4PAqqC',
+    href: 'mailto:support@tombolo.store',
     icon: Support,
-  },
-];
-const navItemsLower = [
-  {
-    label: 'Log Out',
-    callback: async () => {
-      await auth.signOutDefault();
-      // Force a hard refresh to ensure everything is disconnected properly
-      window.location.href = window.location.origin;
-    },
-    icon: Disconnect,
-    placement: 'bottom',
   },
 ];
 
@@ -52,7 +41,21 @@ export interface ISideNav {}
 // @ts-ignore
 const SideNav: React.FC<ISideNav> = ({ children }) => {
   const router = useRouter();
+  const { logOut } = useAuth();
   const [checked, setChecked] = useState(false);
+  const navItemsLower = [
+    {
+      label: 'Log Out',
+      callback: async () => {
+        // await logOut();
+        await auth.signOut();
+        // Force a hard refresh to ensure everything is disconnected properly
+        window.location.href = window.location.origin;
+      },
+      icon: Disconnect,
+      placement: 'bottom',
+    },
+  ];
   const handleCloseDrawer = (): void => {
     setChecked(false);
   };

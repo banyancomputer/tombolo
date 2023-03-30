@@ -1,8 +1,9 @@
 .main {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh;
+  background-color: #f7f7f7;
 }
 
 .main > section {
-    padding: 32px;
+  padding: 32px;
 }
