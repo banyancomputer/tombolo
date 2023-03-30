@@ -50,8 +50,6 @@ export const userConverter = {
   },
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
-    console.log('data', data);
-    // Create a user from the interface.
     return new User(
       snapshot.id,
       data.email,

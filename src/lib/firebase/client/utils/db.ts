@@ -43,8 +43,7 @@ export async function getUser(uid: string) {
     console.log('Error getting user: ', error);
     return error;
   });
-  const user = userConverter.fromFirestore(snapshot, {});
-  return user;
+  return userConverter.fromFirestore(snapshot, {});
 }
 
 export async function createUpload(uid: string, upload: Upload) {

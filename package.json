@@ -1,17 +1,17 @@
 {
   "name": "tombolo",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "engines": {
     "node": ">=14.0.0",
-    "npm": "please use yarn",
+    "npm": "please-use-yarn",
     "yarn": ">=1.22.0"
   },
   "scripts": {
     "build": "next build",
-    "build:dev": "env-cmd -f .env.development cross-env NODE_ENV='development' next build",
     "start": "next start",
     "lint": "next lint",
+    "prettier": "prettier --write .",
     "format": "prettier --write .",
     "dev": "cross-env NODE_OPTIONS='--inspect' NODE_ENV='development' next dev",
     "prod": "cross-env NODE_ENV='production' next start"
@@ -43,6 +43,7 @@
     "validator": "^13.9.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",
     "env-cmd": "^10.1.0",

@@ -49,8 +49,14 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
         // Calculate the total size of the upload
         let total_size = 0;
         files.forEach((file) => {
+          console.log(
+            file.size + '+' + total_size,
+            ' = ',
+            file.size + total_size
+          );
           total_size += file.size;
         });
+        console.log('total_size: ', total_size);
         // Set the total size in TB
         setTotalSize(total_size / 1024);
         console.log('upload_id: ', upload_id);
@@ -131,7 +137,8 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
             <div className="w-full border-r-2 border-r-[#000] p-4">
               Total Upload Size
               <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
-                {total_size} TiB
+                {/* Round TiBs to the nearst .01 Tib*/}
+                {Math.round(total_size * 100) / 100} TiB
               </div>
             </div>
             <div className="w-full border-r-2 border-r-[#000] p-4">

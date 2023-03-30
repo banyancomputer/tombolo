@@ -67,7 +67,11 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
       db.getUploads(user.uid)
         .then((uploads) => {
           setUploads(uploads);
-          setTotalSize(uploads.reduce((a, b) => a + b.size, 0) / 1024);
+          // Calculate the total size of the upload, to the nearest .01 TB
+          setTotalSize(
+            (Math.round(uploads.reduce((a, b) => a + b.size, 0) / 1024) * 100) /
+              100
+          );
         })
         .catch((err) => {
           console.log(err);
@@ -158,7 +162,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
             <div className="w-full border-r-2 border-r-[#000] p-4">
               Data Stored
               <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
-                {total_size > 0 ? total_size : 0} TiB
+                {total_size} TiB
               </div>
             </div>
           </div>
