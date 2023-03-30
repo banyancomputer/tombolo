@@ -6,9 +6,7 @@
   "contentType": "application/json",
   "storageClass": "STANDARD",
   "contentDisposition": "inline",
-  "downloadTokens": [
-    "e808ecbd-2f7f-49e8-9f97-acc17f73f6ba"
-  ],
+  "downloadTokens": ["e808ecbd-2f7f-49e8-9f97-acc17f73f6ba"],
   "etag": "i4MJ2YCbw/U/pr5PbI6q7KwBZtM",
   "customMetadata": {},
   "timeCreated": "2023-03-29T23:58:55.284Z",
