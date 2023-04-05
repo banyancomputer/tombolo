@@ -85,15 +85,16 @@ const SideNav: React.FC<ISideNav> = ({ children }) => {
             <BrandLogo />
             <BrandWordmark />
             <AlphaTag />
-            <IconButton
-              className="ml-auto"
-              aria-label="Exit Nav"
-              fontSize={20}
-              icon={<CloseIcon />}
-              onClick={() => {
-                handleCloseDrawer();
-              }}
-            />
+            <div className="xs:block xs:ml-auto lg:hidden">
+              <IconButton
+                aria-label="Exit Nav"
+                fontSize={20}
+                icon={<CloseIcon />}
+                onClick={() => {
+                  handleCloseDrawer();
+                }}
+              />
+            </div>
           </div>
           {/* Upper Menu */}
           <ul className="mt-auto ">

@@ -7,6 +7,7 @@ import BrandLogo from '@/images/icons/BrandLogo';
 import BrandWordmark from '@/images/icons/BrandWordmark';
 import Hamburger from '@/images/icons/Hamburger';
 import AlphaTag from '@/images/tags/AlphaTag';
+import NavMobile from '@/components/navs/side/NavMobile';
 
 const UploadPortal: NextPageWithLayout = () => {
   return (
@@ -32,17 +33,7 @@ const UploadPortal: NextPageWithLayout = () => {
         </div>
       </div>
       <div className="xs:block lg:hidden">
-        <div className="flex items-center cursor-pointer gap-1 pl-2 border-b border-b-2 border-b-black">
-          <BrandLogo />
-          <BrandWordmark />
-          <AlphaTag />
-          <label
-            htmlFor="sidebar-nav"
-            className="drawer-button cursor-pointer -translate-x-2 ml-auto"
-          >
-            <Hamburger />
-          </label>
-        </div>
+        <NavMobile />
         <div className="h-screen flex justify-center content-center">
           <div className="text-xl font-medium mt-auto mb-auto">
             While Tombolo is in beta version,

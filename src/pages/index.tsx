@@ -3,8 +3,19 @@ import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
 import { db } from '@/lib/firebase/client';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { AddIcon, HamburgerIcon, SearchIcon } from '@chakra-ui/icons';
-import Separator from '@/images/icons/Separator';
+import {
+  AddIcon,
+  ArrowForwardIcon,
+  DeleteIcon,
+  EditIcon,
+  ExternalLinkIcon,
+  HamburgerIcon,
+  Icon,
+  RepeatIcon,
+  SearchIcon,
+} from '@chakra-ui/icons';
+import { BsThreeDots } from 'react-icons/bs';
+import { AiOutlineFolderOpen } from 'react-icons/ai';
 import {
   Accordion,
   AccordionButton,
@@ -20,10 +31,15 @@ import {
   DrawerContent,
   DrawerFooter,
   DrawerOverlay,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderThumb,
@@ -33,13 +49,15 @@ import {
 import NoUploadScreen from '@/components/utils/screens/NoUploadScreen';
 import { Upload } from '@/lib/entities/upload';
 import { useAuth } from '@/contexts/auth';
-import { useRouter } from 'next/router';
+import router, { useRouter } from 'next/router';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import Filter from '@/images/icons/Filter';
 import BrandLogo from '@/images/icons/BrandLogo';
 import BrandWordmark from '@/images/icons/BrandWordmark';
 import Hamburger from '@/images/icons/Hamburger';
 import AlphaTag from '@/images/tags/AlphaTag';
+import NewDeal from '@/images/icons/NewDeal';
+import NavMobile from '@/components/navs/side/NavMobile';
 
 export interface IDashboard {}
 
@@ -57,32 +75,87 @@ const customStyles = {
   },
 };
 
-const CustomerCard = ({ id, name, status, size }) => {
+const CustomerCard = ({ id, name, status, size, data }: any) => {
   const getStatusBadge = (status) => {
-    const lowercaseStatus = status.toLowerCase();
-
-    if (lowercaseStatus === 'terminated') {
-      return <Badge colorScheme="red">Terminated</Badge>;
-    } else if (lowercaseStatus === 'stored') {
-      return <Badge colorScheme="green">Stored</Badge>;
-    } else if (lowercaseStatus === 'upload scheduled') {
-      return <Badge colorScheme="blue">Upload Scheduled</Badge>;
-    } else if (lowercaseStatus === 'data prep') {
-      return <Badge colorScheme="blue">Data Prep</Badge>;
+    if (status == 3) {
+      return (
+        <div className="flex items-center justify-center">
+          Requested <ArrowForwardIcon /> Data Prep
+          <ArrowForwardIcon /> Stored <ArrowForwardIcon />
+          <div className="font-bold"> Terminated </div>
+        </div>
+      );
+    } else if (status == 2) {
+      return (
+        <div className="flex items-center justify-center">
+          Requested <ArrowForwardIcon /> Data Prep
+          <ArrowForwardIcon /> <div className="font-bold"> Stored </div>
+          <ArrowForwardIcon /> Terminated
+        </div>
+      );
+    } else if (status == 1) {
+      return (
+        <div className="flex items-center justify-center">
+          Requested <ArrowForwardIcon />
+          <div className="font-bold">Data Prep </div>
+          <ArrowForwardIcon /> Stored <ArrowForwardIcon /> Terminated
+        </div>
+      );
     } else {
-      return <Badge>Deal Requested</Badge>;
+      return (
+        <div className="flex items-center justify-center">
+          <div className="font-bold">Requested</div>
+          <ArrowForwardIcon /> Data Prep <ArrowForwardIcon /> Stored
+          <ArrowForwardIcon /> Terminated
+        </div>
+      );
     }
   };
   return (
-    <div>
-      <h2>{id}</h2>
-      <h2>{name}</h2>
-      <p>Size:{size}</p>
-      <p>Status: {getStatusBadge(status)}</p>
+    <div className="bg-white mt-4">
+      <div className="flex border-b">
+        <div className="p-3 text-lg border-r grow truncate">
+          {name}
+          <div className="text-xs text-slate-400">{size}</div>
+        </div>
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            className="m-auto mx-4"
+            aria-label="Options"
+            icon={<BsThreeDots />}
+            variant="ghost"
+          />
+          <MenuList>
+            <MenuItem
+              icon={<AiOutlineFolderOpen />}
+              onClick={() => router.push('/files/' + data.id)}
+            >
+              Open File View
+            </MenuItem>
+            <MenuItem
+              icon={<DeleteIcon />}
+              onClick={() =>
+                (window.location.href =
+                  'https://share.hsforms.com/143jPAVGURWODS_QtCkFJtQe3p87')
+              }
+            >
+              Request Termination
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </div>
+      <div className="border-b text-center text-xs text-slate-400">
+        {getStatusBadge(status)}
+      </div>
+      <div className="text-xs text-slate-400 p-3">
+        Upload ID
+        <div className="text-black truncate"> {id}</div>
+      </div>
     </div>
   );
 };
-const CustomerList = ({ data }) => {
+const CustomerList = ({ data }: any) => {
   return (
     <div>
       {data.map((customer) => (
@@ -243,7 +316,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                     <Input
                       htmlSize={40}
                       width="auto"
-                      type="tel"
+                      type="search"
                       placeholder="Search"
                       bgColor="white"
                       value={searchQuery}
@@ -388,31 +461,20 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
             />
           </div>
           <div className="xs:block lg:hidden">
-            <div className="flex items-center cursor-pointer gap-1 pl-2 border-b border-b-2 border-b-black">
-              <BrandLogo />
-              <BrandWordmark />
-              <AlphaTag />
-
-              <label
-                htmlFor="sidebar-nav"
-                className="drawer-button cursor-pointer -translate-x-2 ml-auto"
-              >
-                <Hamburger />
-              </label>
-            </div>
+            <NavMobile />
             <div className="p-6">
               <div className="bg-white p-3 font-medium">
                 <div className="text-slate-400">Data Stored</div>
-                <div className="font-medium text-xl mt-2">123,000TiB</div>
+                <div className="text-xl mt-2">{total_size} TiB</div>
               </div>
-              <div className="mt-6 border-t border-t-black border-b border-b-black flex ">
+              <div className="mt-6 border-t border-t-black border-b border-b-black flex py-2">
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <SearchIcon color="gray.400" />
+                    <SearchIcon />
                   </InputLeftElement>
                   <Input
                     width="auto"
-                    type="tel"
+                    type="search"
                     placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -420,15 +482,19 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                 </InputGroup>
                 <Button
                   leftIcon={<Filter />}
-                  className=""
                   onClick={onOpen}
                   colorScheme="black"
                   variant="ghost"
-                  bgColor="white"
-                  borderColor="white"
                 >
                   Filter
                 </Button>
+              </div>
+              <div
+                className="flex text-md items-center bg-white mt-4 justify-center py-2 gap-2"
+                onClick={() => router.push('/upload-portal')}
+              >
+                <NewDeal />
+                New Upload
               </div>
               <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay bgColor="#16181BE5" />

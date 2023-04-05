@@ -29,6 +29,7 @@ import BrandLogo from '@/images/icons/BrandLogo';
 import BrandWordmark from '@/images/icons/BrandWordmark';
 import Hamburger from '@/images/icons/Hamburger';
 import AlphaTag from '@/images/tags/AlphaTag';
+import NavMobile from '@/components/navs/side/NavMobile';
 
 const Account: NextPageWithLayout = ({}) => {
   const { user } = useAuth();
@@ -196,19 +197,7 @@ const Account: NextPageWithLayout = ({}) => {
           </div>
         </div>
         <div className="xs:block lg:hidden">
-          <div className="flex items-center cursor-pointer gap-1 pl-2 border-b border-b-2 border-b-black">
-            <BrandLogo />
-            <BrandWordmark />
-            <AlphaTag />
-
-            <label
-              htmlFor="sidebar-nav"
-              className="drawer-button cursor-pointer -translate-x-2 ml-auto"
-            >
-              <Hamburger />
-            </label>
-          </div>
-
+          <NavMobile />
           <div className="flex flex-col gap-2 p-6">
             <h1 className="text-xl">Profile</h1>
             <div className="flex flex-col">
