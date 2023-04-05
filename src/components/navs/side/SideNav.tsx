@@ -13,6 +13,8 @@ import Account from '@/images/icons/Account';
 import Support from '@/images/icons/Support';
 import Disconnect from '@/images/icons/Disconnect';
 import { useAuth } from '@/contexts/auth';
+import { CloseIcon } from '@chakra-ui/icons';
+import { IconButton } from '@chakra-ui/react';
 
 const navItemsUpper = [
   {
@@ -79,16 +81,19 @@ const SideNav: React.FC<ISideNav> = ({ children }) => {
         />
         <div className="menu p-4 overflow-y-auto w-70 bg-base-100 text-base-content border-r border-r-black">
           {/* Brand */}
-          <div
-            className="flex items-center gap-2 cursor-pointer mb-8"
-            onClick={() => {
-              handleCloseDrawer();
-              router.push('/');
-            }}
-          >
+          <div className="flex items-center gap-2 cursor-pointer mb-8">
             <BrandLogo />
             <BrandWordmark />
             <AlphaTag />
+            <IconButton
+              className="ml-auto"
+              aria-label="Exit Nav"
+              fontSize={20}
+              icon={<CloseIcon />}
+              onClick={() => {
+                handleCloseDrawer();
+              }}
+            />
           </div>
           {/* Upper Menu */}
           <ul className="mt-auto ">

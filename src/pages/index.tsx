@@ -36,6 +36,10 @@ import { useAuth } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import Filter from '@/images/icons/Filter';
+import BrandLogo from '@/images/icons/BrandLogo';
+import BrandWordmark from '@/images/icons/BrandWordmark';
+import Hamburger from '@/images/icons/Hamburger';
+import AlphaTag from '@/images/tags/AlphaTag';
 
 export interface IDashboard {}
 
@@ -51,6 +55,47 @@ const customStyles = {
       fontWeight: 700,
     },
   },
+};
+
+const CustomerCard = ({ id, name, status, size }) => {
+  const getStatusBadge = (status) => {
+    const lowercaseStatus = status.toLowerCase();
+
+    if (lowercaseStatus === 'terminated') {
+      return <Badge colorScheme="red">Terminated</Badge>;
+    } else if (lowercaseStatus === 'stored') {
+      return <Badge colorScheme="green">Stored</Badge>;
+    } else if (lowercaseStatus === 'upload scheduled') {
+      return <Badge colorScheme="blue">Upload Scheduled</Badge>;
+    } else if (lowercaseStatus === 'data prep') {
+      return <Badge colorScheme="blue">Data Prep</Badge>;
+    } else {
+      return <Badge>Deal Requested</Badge>;
+    }
+  };
+  return (
+    <div>
+      <h2>{id}</h2>
+      <h2>{name}</h2>
+      <p>Size:{size}</p>
+      <p>Status: {getStatusBadge(status)}</p>
+    </div>
+  );
+};
+const CustomerList = ({ data }) => {
+  return (
+    <div>
+      {data.map((customer) => (
+        <CustomerCard
+          key={customer.id}
+          id={customer.id}
+          name={customer.name}
+          status={customer.status}
+          size={customer.size + ' GiB'}
+        />
+      ))}
+    </div>
+  );
 };
 
 const Dashboard: NextPageWithLayout<IDashboard> = () => {
@@ -158,184 +203,361 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
     <AuthorizedRoute>
       {uploads.length > 0 ? (
         <>
-          <div className="relative flex h-36">
-            <div className="w-full border-r-2 border-r-[#000] p-4">
-              Data Stored
-              <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
-                {total_size} TiB
+          <div className="xs:hidden lg:block">
+            <div className="relative flex h-36">
+              <div className="w-full border-r-2 border-r-[#000] p-4">
+                Data Stored
+                <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
+                  {total_size} TiB
+                </div>
               </div>
             </div>
-          </div>
-          <div className="border-t-2 border-t-[#000] pb-44">
-            <div className="flex mt-4">
-              <Button
-                leftIcon={<AddIcon />}
-                colorScheme="blue"
-                variant="solid"
-                ml={4}
-                w={40}
-                onClick={() => router.push('/upload-portal')}
-              >
-                New Upload
-              </Button>
-              <div className="flex gap-4 ml-auto">
+            <div className="border-t-2 border-t-[#000] pb-44">
+              <div className="flex mt-4">
                 <Button
-                  leftIcon={<Filter />}
-                  className=""
-                  onClick={onOpen}
-                  colorScheme="black"
-                  variant="outline"
-                  bgColor="white"
-                  borderColor="white"
+                  leftIcon={<AddIcon />}
+                  colorScheme="blue"
+                  variant="solid"
+                  ml={4}
+                  w={40}
+                  onClick={() => router.push('/upload-portal')}
                 >
-                  Filter
+                  New Upload
                 </Button>
+                <div className="flex gap-4 ml-auto">
+                  <Button
+                    leftIcon={<Filter />}
+                    className=""
+                    onClick={onOpen}
+                    colorScheme="black"
+                    variant="outline"
+                    bgColor="white"
+                    borderColor="white"
+                  >
+                    Filter
+                  </Button>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <SearchIcon color="gray.400" />
+                    </InputLeftElement>
+                    <Input
+                      htmlSize={40}
+                      width="auto"
+                      type="tel"
+                      placeholder="Search"
+                      bgColor="white"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </InputGroup>
+                </div>
+              </div>
+              <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay bgColor="#16181BE5" />
+                <DrawerContent>
+                  <h1 className="text-xl mt-12 mb-2 ml-2 font-medium">
+                    Filters
+                  </h1>
+                  <DrawerBody p={0}>
+                    {/* thea: use mapping function when cleaning up */}
+                    <Accordion
+                      allowMultiple
+                      className="border-b border-b-black"
+                    >
+                      <AccordionItem>
+                        <h2>
+                          <AccordionButton className="border-t-2 border-t-black pt-4 pb-4">
+                            <Box
+                              as="span"
+                              flex="1"
+                              textAlign="left"
+                              className="font-bold mb-2 text-xs mt-2"
+                            >
+                              STATUS
+                            </Box>
+                            <AccordionIcon />
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                          <div className="flex flex-col gap-1">
+                            <Checkbox
+                              value={0}
+                              isChecked={statusFilter.includes(0)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 0]
+                                    : prev.filter((status) => status !== 0)
+                                )
+                              }
+                            >
+                              Upload Requested
+                            </Checkbox>
+                            <Checkbox
+                              value={1}
+                              isChecked={statusFilter.includes(1)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 1]
+                                    : prev.filter((status) => status !== 1)
+                                )
+                              }
+                            >
+                              Data Prep
+                            </Checkbox>
+                            <Checkbox
+                              value={2}
+                              isChecked={statusFilter.includes(2)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 2]
+                                    : prev.filter((status) => status !== 2)
+                                )
+                              }
+                            >
+                              Stored
+                            </Checkbox>
+                            <Checkbox
+                              value={3}
+                              isChecked={statusFilter.includes(3)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 3]
+                                    : prev.filter((status) => status !== 3)
+                                )
+                              }
+                            >
+                              Terminated
+                            </Checkbox>
+                          </div>
+                        </AccordionPanel>
+                      </AccordionItem>
+
+                      {/*<AccordionItem>*/}
+                      {/*  <h2>*/}
+                      {/*    <AccordionButton className="border-t-2 border-t-black">*/}
+                      {/*      <Box*/}
+                      {/*        as="span"*/}
+                      {/*        flex="1"*/}
+                      {/*        textAlign="left"*/}
+                      {/*        className="font-bold mb-2 text-xs mt-2"*/}
+                      {/*      >*/}
+                      {/*        UPLOAD SIZE*/}
+                      {/*      </Box>*/}
+                      {/*      <AccordionIcon />*/}
+                      {/*    </AccordionButton>*/}
+                      {/*  </h2>*/}
+                      {/*  <AccordionPanel pb={4}>*/}
+                      {/*    <div className="flex flex-col gap-1">*/}
+                      {/*      <Checkbox>less than 10TiB</Checkbox>*/}
+                      {/*      <Checkbox>10-1000TiB</Checkbox>*/}
+                      {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
+                      {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
+                      {/*    </div>*/}
+                      {/*  </AccordionPanel>*/}
+                      {/*</AccordionItem>*/}
+                    </Accordion>
+                  </DrawerBody>
+                  <DrawerFooter
+                    borderTopWidth="2px"
+                    borderTopColor="black"
+                    className="mt-12"
+                  >
+                    {/* add clear all */}
+                    <Button
+                      colorScheme="black"
+                      variant="outline"
+                      mr="auto"
+                      onClick={() => setStatusFilter([])}
+                    >
+                      Clear All
+                    </Button>
+                  </DrawerFooter>
+                </DrawerContent>
+              </Drawer>
+            </div>
+            <DataTable
+              columns={overviewColumns}
+              data={applyFilters()}
+              customStyles={customStyles}
+              expandableRows
+              expandableRowsComponent={ExpandedComponentOverView}
+            />
+          </div>
+          <div className="xs:block lg:hidden">
+            <div className="flex items-center cursor-pointer gap-1 pl-2 border-b border-b-2 border-b-black">
+              <BrandLogo />
+              <BrandWordmark />
+              <AlphaTag />
+
+              <label
+                htmlFor="sidebar-nav"
+                className="drawer-button cursor-pointer -translate-x-2 ml-auto"
+              >
+                <Hamburger />
+              </label>
+            </div>
+            <div className="p-6">
+              <div className="bg-white p-3 font-medium">
+                <div className="text-slate-400">Data Stored</div>
+                <div className="font-medium text-xl mt-2">123,000TiB</div>
+              </div>
+              <div className="mt-6 border-t border-t-black border-b border-b-black flex ">
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
                     <SearchIcon color="gray.400" />
                   </InputLeftElement>
                   <Input
-                    htmlSize={40}
                     width="auto"
                     type="tel"
                     placeholder="Search"
-                    bgColor="white"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
-              </div>
-            </div>
-            <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-              <DrawerOverlay bgColor="#16181BE5" />
-              <DrawerContent>
-                <h1 className="text-xl mt-12 mb-2 ml-2 font-medium">Filters</h1>
-                <DrawerBody p={0}>
-                  {/* thea: use mapping function when cleaning up */}
-                  <Accordion allowMultiple className="border-b border-b-black">
-                    <AccordionItem>
-                      <h2>
-                        <AccordionButton className="border-t-2 border-t-black pt-4 pb-4">
-                          <Box
-                            as="span"
-                            flex="1"
-                            textAlign="left"
-                            className="font-bold mb-2 text-xs mt-2"
-                          >
-                            STATUS
-                          </Box>
-                          <AccordionIcon />
-                        </AccordionButton>
-                      </h2>
-                      <AccordionPanel pb={4}>
-                        <div className="flex flex-col gap-1">
-                          <Checkbox
-                            value={0}
-                            isChecked={statusFilter.includes(0)}
-                            onChange={(e) =>
-                              setStatusFilter((prev) =>
-                                e.target.checked
-                                  ? [...prev, 0]
-                                  : prev.filter((status) => status !== 0)
-                              )
-                            }
-                          >
-                            Upload Requested
-                          </Checkbox>
-                          <Checkbox
-                            value={1}
-                            isChecked={statusFilter.includes(1)}
-                            onChange={(e) =>
-                              setStatusFilter((prev) =>
-                                e.target.checked
-                                  ? [...prev, 1]
-                                  : prev.filter((status) => status !== 1)
-                              )
-                            }
-                          >
-                            Data Prep
-                          </Checkbox>
-                          <Checkbox
-                            value={2}
-                            isChecked={statusFilter.includes(2)}
-                            onChange={(e) =>
-                              setStatusFilter((prev) =>
-                                e.target.checked
-                                  ? [...prev, 2]
-                                  : prev.filter((status) => status !== 2)
-                              )
-                            }
-                          >
-                            Stored
-                          </Checkbox>
-                          <Checkbox
-                            value={3}
-                            isChecked={statusFilter.includes(3)}
-                            onChange={(e) =>
-                              setStatusFilter((prev) =>
-                                e.target.checked
-                                  ? [...prev, 3]
-                                  : prev.filter((status) => status !== 3)
-                              )
-                            }
-                          >
-                            Terminated
-                          </Checkbox>
-                        </div>
-                      </AccordionPanel>
-                    </AccordionItem>
-
-                    {/*<AccordionItem>*/}
-                    {/*  <h2>*/}
-                    {/*    <AccordionButton className="border-t-2 border-t-black">*/}
-                    {/*      <Box*/}
-                    {/*        as="span"*/}
-                    {/*        flex="1"*/}
-                    {/*        textAlign="left"*/}
-                    {/*        className="font-bold mb-2 text-xs mt-2"*/}
-                    {/*      >*/}
-                    {/*        UPLOAD SIZE*/}
-                    {/*      </Box>*/}
-                    {/*      <AccordionIcon />*/}
-                    {/*    </AccordionButton>*/}
-                    {/*  </h2>*/}
-                    {/*  <AccordionPanel pb={4}>*/}
-                    {/*    <div className="flex flex-col gap-1">*/}
-                    {/*      <Checkbox>less than 10TiB</Checkbox>*/}
-                    {/*      <Checkbox>10-1000TiB</Checkbox>*/}
-                    {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
-                    {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
-                    {/*    </div>*/}
-                    {/*  </AccordionPanel>*/}
-                    {/*</AccordionItem>*/}
-                  </Accordion>
-                </DrawerBody>
-                <DrawerFooter
-                  borderTopWidth="2px"
-                  borderTopColor="black"
-                  className="mt-12"
+                <Button
+                  leftIcon={<Filter />}
+                  className=""
+                  onClick={onOpen}
+                  colorScheme="black"
+                  variant="ghost"
+                  bgColor="white"
+                  borderColor="white"
                 >
-                  {/* add clear all */}
-                  <Button
-                    colorScheme="black"
-                    variant="outline"
-                    mr="auto"
-                    onClick={() => setStatusFilter([])}
+                  Filter
+                </Button>
+              </div>
+              <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay bgColor="#16181BE5" />
+                <DrawerContent>
+                  <h1 className="text-xl mt-12 mb-2 ml-2 font-medium">
+                    Filters
+                  </h1>
+                  <DrawerBody p={0}>
+                    {/* thea: use mapping function when cleaning up */}
+                    <Accordion
+                      allowMultiple
+                      className="border-b border-b-black"
+                    >
+                      <AccordionItem>
+                        <h2>
+                          <AccordionButton className="border-t-2 border-t-black pt-4 pb-4">
+                            <Box
+                              as="span"
+                              flex="1"
+                              textAlign="left"
+                              className="font-bold mb-2 text-xs mt-2"
+                            >
+                              STATUS
+                            </Box>
+                            <AccordionIcon />
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                          <div className="flex flex-col gap-1">
+                            <Checkbox
+                              value={0}
+                              isChecked={statusFilter.includes(0)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 0]
+                                    : prev.filter((status) => status !== 0)
+                                )
+                              }
+                            >
+                              Upload Requested
+                            </Checkbox>
+                            <Checkbox
+                              value={1}
+                              isChecked={statusFilter.includes(1)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 1]
+                                    : prev.filter((status) => status !== 1)
+                                )
+                              }
+                            >
+                              Data Prep
+                            </Checkbox>
+                            <Checkbox
+                              value={2}
+                              isChecked={statusFilter.includes(2)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 2]
+                                    : prev.filter((status) => status !== 2)
+                                )
+                              }
+                            >
+                              Stored
+                            </Checkbox>
+                            <Checkbox
+                              value={3}
+                              isChecked={statusFilter.includes(3)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 3]
+                                    : prev.filter((status) => status !== 3)
+                                )
+                              }
+                            >
+                              Terminated
+                            </Checkbox>
+                          </div>
+                        </AccordionPanel>
+                      </AccordionItem>
+
+                      {/*<AccordionItem>*/}
+                      {/*  <h2>*/}
+                      {/*    <AccordionButton className="border-t-2 border-t-black">*/}
+                      {/*      <Box*/}
+                      {/*        as="span"*/}
+                      {/*        flex="1"*/}
+                      {/*        textAlign="left"*/}
+                      {/*        className="font-bold mb-2 text-xs mt-2"*/}
+                      {/*      >*/}
+                      {/*        UPLOAD SIZE*/}
+                      {/*      </Box>*/}
+                      {/*      <AccordionIcon />*/}
+                      {/*    </AccordionButton>*/}
+                      {/*  </h2>*/}
+                      {/*  <AccordionPanel pb={4}>*/}
+                      {/*    <div className="flex flex-col gap-1">*/}
+                      {/*      <Checkbox>less than 10TiB</Checkbox>*/}
+                      {/*      <Checkbox>10-1000TiB</Checkbox>*/}
+                      {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
+                      {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
+                      {/*    </div>*/}
+                      {/*  </AccordionPanel>*/}
+                      {/*</AccordionItem>*/}
+                    </Accordion>
+                  </DrawerBody>
+                  <DrawerFooter
+                    borderTopWidth="2px"
+                    borderTopColor="black"
+                    className="mt-12"
                   >
-                    Clear All
-                  </Button>
-                </DrawerFooter>
-              </DrawerContent>
-            </Drawer>
+                    <Button
+                      colorScheme="black"
+                      variant="outline"
+                      mr="auto"
+                      onClick={() => setStatusFilter([])}
+                    >
+                      Clear All
+                    </Button>
+                  </DrawerFooter>
+                </DrawerContent>
+              </Drawer>
+              <CustomerList data={applyFilters()} />
+            </div>
           </div>
-          <DataTable
-            columns={overviewColumns}
-            // data={uploads}
-            data={applyFilters()} // thea: remove this
-            customStyles={customStyles}
-            expandableRows
-            expandableRowsComponent={ExpandedComponentOverView}
-          />
         </>
       ) : (
         <NoUploadScreen />
