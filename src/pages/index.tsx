@@ -58,6 +58,7 @@ import Hamburger from '@/images/icons/Hamburger';
 import AlphaTag from '@/images/tags/AlphaTag';
 import NewDeal from '@/images/icons/NewDeal';
 import NavMobile from '@/components/navs/side/NavMobile';
+import CardMobile from '@/components/items/nav/CardMobile';
 
 export interface IDashboard {}
 
@@ -112,47 +113,21 @@ const CustomerCard = ({ id, name, status, size, data }: any) => {
     }
   };
   return (
-    <div className="bg-white mt-4">
-      <div className="flex border-b">
-        <div className="p-3 text-lg border-r grow truncate">
-          {name}
-          <div className="text-xs text-slate-400">{size}</div>
-        </div>
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            className="m-auto mx-4"
-            aria-label="Options"
-            icon={<BsThreeDots />}
-            variant="ghost"
-          />
-          <MenuList>
-            <MenuItem
-              icon={<AiOutlineFolderOpen />}
-              onClick={() => router.push('/files/' + data.id)}
-            >
-              Open File View
-            </MenuItem>
-            <MenuItem
-              icon={<DeleteIcon />}
-              onClick={() =>
-                (window.location.href =
-                  'https://share.hsforms.com/143jPAVGURWODS_QtCkFJtQe3p87')
-              }
-            >
-              Request Termination
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      </div>
-      <div className="border-b text-center text-xs text-slate-400">
-        {getStatusBadge(status)}
-      </div>
-      <div className="text-xs text-slate-400 p-3">
-        Upload ID
-        <div className="text-black truncate"> {id}</div>
-      </div>
-    </div>
+    <>
+      <CardMobile
+        name={name}
+        size={size}
+        id={id}
+        isFiles={false}
+        // alex: this doesn't work
+        onClickFileView={() => router.push('/files/' + data.id)}
+        onClickDelete={() =>
+          (window.location.href =
+            'https://share.hsforms.com/143jPAVGURWODS_QtCkFJtQe3p87')
+        }
+        stat={getStatusBadge(status)}
+      />
+    </>
   );
 };
 const CustomerList = ({ data }: any) => {

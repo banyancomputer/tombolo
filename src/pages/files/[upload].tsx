@@ -10,7 +10,19 @@ import {
   SearchIcon,
 } from '@chakra-ui/icons';
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
   Button,
+  Checkbox,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerOverlay,
   IconButton,
   Input,
   InputGroup,
@@ -19,6 +31,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { File } from '@/lib/entities/file';
 import NoFileScreen from '@/components/utils/screens/NoFileScreen';
@@ -30,6 +43,9 @@ import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import { AiOutlineFolderOpen } from 'react-icons/ai';
 import { BsThreeDots } from 'react-icons/bs';
 import NavMobile from '@/components/navs/side/NavMobile';
+import InfoBoxes from '@/components/items/nav/InfoBoxes';
+import CardMobile from '@/components/items/nav/CardMobile';
+import Filter from '@/images/icons/Filter';
 
 export interface IFileView {}
 
@@ -55,6 +71,8 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const [total_size, setTotalSize] = useState<number>(0);
   const [manifestUrl, setManifestUrl] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [statusFilter, setStatusFilter] = useState<number[]>([]);
 
   useEffect(() => {
     // Get the upload ID from the URL. Its the last part of the URL
@@ -184,38 +202,17 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
       }
     };
     return (
-      <div className="bg-white mt-4">
-        <div className="flex border-b">
-          <div className="p-3 text-lg border-r grow truncate">
-            {name}
-            <div className="text-xs text-slate-400">{size}</div>
-          </div>
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              className="m-auto mx-4"
-              aria-label="Options"
-              icon={<BsThreeDots />}
-              variant="ghost"
-            />
-            <MenuList>
-              <MenuItem
-                icon={<AiOutlineFolderOpen />}
-                onClick={() =>
-                  (window.location.href =
-                    'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
-                }
-              >
-                File Retrieval Request
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </div>
-        <div className="text-xs text-slate-400 p-3">
-          Upload ID
-          <div className="text-black truncate"> {id}</div>
-        </div>
-      </div>
+      <>
+        <CardMobile
+          name={name}
+          size={size}
+          onClick={() =>
+            (window.location.href =
+              'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
+          }
+          id={id}
+        />
+      </>
     );
   };
   const CustomerList = ({ data }: any) => {
@@ -240,21 +237,12 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
       {files.length > 0 ? (
         <>
           <div className="xs:hidden lg:block">
-            <div className="relative flex h-36">
-              <div className="w-full border-r-2 border-r-[#000] p-4">
-                Total Upload Size
-                <div className="absolute bottom-0 text-black font-medium text-xl mb-2 ">
-                  {/* Round TiBs to the nearst .01 Tib*/}
-                  {Math.round(total_size * 100) / 100} TiB
-                </div>
-              </div>
-              <div className="w-full border-r-2 border-r-[#000] p-4">
-                Number of Files
-                <div className="absolute bottom-0 font-medium text-xl mb-2">
-                  {files.length}
-                </div>
-              </div>
-            </div>
+            <InfoBoxes
+              firstBox="Total Upload Size"
+              firstStat={Math.round(total_size * 100) / 100}
+              secondBox="Number of Files"
+              secondStat={files.length}
+            />
             <div className="border-t-2 border-t-[#000] pb-44">
               <div className="flex mt-4">
                 {/* @ts-ignore */}
@@ -262,13 +250,12 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                   ml={4}
                   colorScheme="blue"
                   variant="solid"
-                  onClick={() => router.push('/') /* change to dashboard */}
+                  onClick={() => router.push('/')}
                 >
                   <ArrowBackIcon />
                   All Uploads
                 </Button>
-                {/*</div>*/}
-                {/*<div className="flex mt-4">*/}
+
                 {/* @ts-ignore */}
                 <Button
                   ml={4}
@@ -286,7 +273,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                 <div className="absolute mt-28 ml-4 text-xl font-semibold flex items-center">
                   <div>{upload?.name}</div>
                   <div className="text-sm ml-2">
-                    {/* change to upload status */}
+                    {/* alex: change to upload status */}
                     <Badge colorScheme="green">{upload?.status}</Badge>
                   </div>
                 </div>
@@ -304,18 +291,13 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
           <div className="xs:block lg:hidden">
             <NavMobile />
             <div className="p-6">
-              <div className="flex flex-row gap-2 pt-2 relative">
-                <div className="bg-white p-3 w-full font-medium">
-                  <div className="text-slate-400"> Total Upload Size</div>
-                  <div className="text-xl mt-2">
-                    {Math.round(total_size * 100) / 100} TiB
-                  </div>
-                </div>
-                <div className="bg-white p-3 w-full font-medium">
-                  <div className="text-slate-400"> Number of Files</div>
-                  <div className="text-xl mt-2">{files.length}</div>
-                </div>
-              </div>
+              <InfoBoxes
+                isDesktop={false}
+                firstBox="Total Upload Size"
+                firstStat={Math.round(total_size * 100) / 100}
+                secondBox="Number of Files"
+                secondStat={files.length}
+              />
               <div className="flex mt-4 justify-between">
                 {/* @ts-ignore */}
                 <Button
@@ -328,8 +310,6 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                   <ArrowBackIcon />
                   All Uploads
                 </Button>
-                {/*</div>*/}
-                {/*<div className="flex mt-4">*/}
                 {/* @ts-ignore */}
                 <Button
                   ml={4}
@@ -357,20 +337,153 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
               </div>
               {/* dummy end */}
 
-              <div className="mt-2 border-t border-t-black border-b border-b-black flex py-2">
+              <div className="mt-6 border-t border-t-black border-b border-b-black flex py-2">
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
                     <SearchIcon />
                   </InputLeftElement>
                   <Input
-                    className="grow"
+                    width="auto"
                     type="search"
                     placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
+                <Button
+                  leftIcon={<Filter />}
+                  onClick={onOpen}
+                  colorScheme="black"
+                  variant="ghost"
+                >
+                  Filter
+                </Button>
               </div>
+              <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay bgColor="#16181BE5" />
+                <DrawerContent>
+                  <h1 className="text-xl mt-12 mb-2 ml-2 font-medium">
+                    Filters
+                  </h1>
+                  <DrawerBody p={0}>
+                    {/* thea: use mapping function when cleaning up */}
+                    <Accordion
+                      allowMultiple
+                      className="border-b border-b-black"
+                    >
+                      <AccordionItem>
+                        <h2>
+                          <AccordionButton className="border-t-2 border-t-black pt-4 pb-4">
+                            <Box
+                              as="span"
+                              flex="1"
+                              textAlign="left"
+                              className="font-bold mb-2 text-xs mt-2"
+                            >
+                              STATUS
+                            </Box>
+                            <AccordionIcon />
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                          <div className="flex flex-col gap-1">
+                            <Checkbox
+                              value={0}
+                              isChecked={statusFilter.includes(0)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 0]
+                                    : prev.filter((status) => status !== 0)
+                                )
+                              }
+                            >
+                              Upload Requested
+                            </Checkbox>
+                            <Checkbox
+                              value={1}
+                              isChecked={statusFilter.includes(1)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 1]
+                                    : prev.filter((status) => status !== 1)
+                                )
+                              }
+                            >
+                              Data Prep
+                            </Checkbox>
+                            <Checkbox
+                              value={2}
+                              isChecked={statusFilter.includes(2)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 2]
+                                    : prev.filter((status) => status !== 2)
+                                )
+                              }
+                            >
+                              Stored
+                            </Checkbox>
+                            <Checkbox
+                              value={3}
+                              isChecked={statusFilter.includes(3)}
+                              onChange={(e) =>
+                                setStatusFilter((prev) =>
+                                  e.target.checked
+                                    ? [...prev, 3]
+                                    : prev.filter((status) => status !== 3)
+                                )
+                              }
+                            >
+                              Terminated
+                            </Checkbox>
+                          </div>
+                        </AccordionPanel>
+                      </AccordionItem>
+
+                      {/*<AccordionItem>*/}
+                      {/*  <h2>*/}
+                      {/*    <AccordionButton className="border-t-2 border-t-black">*/}
+                      {/*      <Box*/}
+                      {/*        as="span"*/}
+                      {/*        flex="1"*/}
+                      {/*        textAlign="left"*/}
+                      {/*        className="font-bold mb-2 text-xs mt-2"*/}
+                      {/*      >*/}
+                      {/*        UPLOAD SIZE*/}
+                      {/*      </Box>*/}
+                      {/*      <AccordionIcon />*/}
+                      {/*    </AccordionButton>*/}
+                      {/*  </h2>*/}
+                      {/*  <AccordionPanel pb={4}>*/}
+                      {/*    <div className="flex flex-col gap-1">*/}
+                      {/*      <Checkbox>less than 10TiB</Checkbox>*/}
+                      {/*      <Checkbox>10-1000TiB</Checkbox>*/}
+                      {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
+                      {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
+                      {/*    </div>*/}
+                      {/*  </AccordionPanel>*/}
+                      {/*</AccordionItem>*/}
+                    </Accordion>
+                  </DrawerBody>
+                  <DrawerFooter
+                    borderTopWidth="2px"
+                    borderTopColor="black"
+                    className="mt-12"
+                  >
+                    <Button
+                      colorScheme="black"
+                      variant="outline"
+                      mr="auto"
+                      onClick={() => setStatusFilter([])}
+                    >
+                      Clear All
+                    </Button>
+                  </DrawerFooter>
+                </DrawerContent>
+              </Drawer>
 
               <CustomerList data={files} />
             </div>
