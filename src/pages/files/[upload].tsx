@@ -166,7 +166,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   );
 
   const CustomerCard = ({ id, name, status, size, data }: any) => {
-    const getStatusBadge = (status) => {
+    const getStatusBadge = (status: any) => {
       if (status == 3) {
         return (
           <div className="flex items-center justify-center">
@@ -218,7 +218,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const CustomerList = ({ data }: any) => {
     return (
       <div>
-        {data.map((customer) => (
+        {data.map((customer: any) => (
           <CustomerCard
             key={customer.id}
             id={customer.id}
