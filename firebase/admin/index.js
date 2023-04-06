@@ -94,7 +94,7 @@ switch (args[0]) {
         uploadExists(user.id, uploadId)
           .then((status) => {
             try {
-              if (!status) {
+              if (!(status >= 0)) {
                 console.log('Upload does not exist');
                 return;
               } else if (status != 0) {

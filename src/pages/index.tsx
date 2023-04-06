@@ -120,7 +120,7 @@ const CustomerCard = ({ id, name, status, size, data }: any) => {
         id={id}
         isFiles={false}
         // alex: this doesn't work
-        onClickFileView={() => router.push('/files/' + data.id)}
+        onClickFileView={() => (window.location.href = '/files/' + id)}
         onClickDelete={() =>
           (window.location.href =
             'https://share.hsforms.com/143jPAVGURWODS_QtCkFJtQe3p87')
