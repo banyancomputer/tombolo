@@ -380,7 +380,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                               textAlign="left"
                               className="font-bold mb-2 text-xs mt-2"
                             >
-                              STATUS
+                              SIZE
                             </Box>
                             <AccordionIcon />
                           </AccordionButton>
@@ -398,7 +398,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                                 )
                               }
                             >
-                              Upload Requested
+                              under 1 GiB
                             </Checkbox>
                             <Checkbox
                               value={1}
@@ -411,7 +411,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                                 )
                               }
                             >
-                              Data Prep
+                              1-5 GiB
                             </Checkbox>
                             <Checkbox
                               value={2}
@@ -424,7 +424,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                                 )
                               }
                             >
-                              Stored
+                              5-10 GiB
                             </Checkbox>
                             <Checkbox
                               value={3}
@@ -437,7 +437,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                                 )
                               }
                             >
-                              Terminated
+                              10+ GiB
                             </Checkbox>
                           </div>
                         </AccordionPanel>
