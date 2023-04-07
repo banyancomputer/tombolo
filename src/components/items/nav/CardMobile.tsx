@@ -40,6 +40,7 @@ const CardMobile: React.FC<Card> = ({
             <div className="text-xs text-slate-400">{size}</div>
           </div>
           <Menu>
+            {/*@ts-ignore: union type thing*/}
             <MenuButton
               as={IconButton}
               className="m-auto mx-4"
