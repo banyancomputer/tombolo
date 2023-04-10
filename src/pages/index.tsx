@@ -57,8 +57,8 @@ import BrandWordmark from '@/images/icons/BrandWordmark';
 import Hamburger from '@/images/icons/Hamburger';
 import AlphaTag from '@/images/tags/AlphaTag';
 import NewDeal from '@/images/icons/NewDeal';
-import NavMobile from '@/components/navs/side/NavMobile';
-import CardMobile from '@/components/items/nav/CardMobile';
+import NavMobile from '@/components/navs/side/SideNavMobile';
+import CardMobile from '@/components/cards/deal/CardMobile';
 
 export interface IDashboard {}
 

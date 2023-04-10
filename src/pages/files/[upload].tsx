@@ -42,9 +42,9 @@ import { Badge } from '@chakra-ui/react';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import { AiOutlineFolderOpen } from 'react-icons/ai';
 import { BsThreeDots } from 'react-icons/bs';
-import NavMobile from '@/components/navs/side/NavMobile';
+import NavMobile from '@/components/navs/side/SideNavMobile';
 import InfoBoxes from '@/components/items/nav/InfoBoxes';
-import CardMobile from '@/components/items/nav/CardMobile';
+import CardMobile from '@/components/cards/deal/CardMobile';
 import Filter from '@/images/icons/Filter';
 
 export interface IFileView {}
@@ -165,42 +165,46 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
     </div>
   );
 
+  const StatMobile = (status: number) => {
+    if (status == 3) {
+      return (
+        <div className="flex items-center justify-center">
+          Requested <ArrowForwardIcon /> Data Prep
+          <ArrowForwardIcon /> Stored <ArrowForwardIcon />
+          <div className="font-bold"> Terminated </div>
+        </div>
+      );
+    } else if (status == 2) {
+      return (
+        <div className="flex items-center justify-center">
+          Requested <ArrowForwardIcon /> Data Prep
+          <ArrowForwardIcon /> <div className="font-bold"> Stored </div>
+          <ArrowForwardIcon /> Terminated
+        </div>
+      );
+    } else if (status == 1) {
+      return (
+        <div className="flex items-center justify-center">
+          Requested <ArrowForwardIcon />
+          <div className="font-bold">Data Prep </div>
+          <ArrowForwardIcon /> Stored <ArrowForwardIcon /> Terminated
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center justify-center">
+          <div className="font-bold">Requested</div>
+          <ArrowForwardIcon /> Data Prep <ArrowForwardIcon /> Stored
+          <ArrowForwardIcon /> Terminated
+        </div>
+      );
+    }
+  };
+
   const CustomerCard = ({ id, name, status, size, data }: any) => {
-    const getStatusBadge = (status: any) => {
-      if (status == 3) {
-        return (
-          <div className="flex items-center justify-center">
-            Requested <ArrowForwardIcon /> Data Prep
-            <ArrowForwardIcon /> Stored <ArrowForwardIcon />
-            <div className="font-bold"> Terminated </div>
-          </div>
-        );
-      } else if (status == 2) {
-        return (
-          <div className="flex items-center justify-center">
-            Requested <ArrowForwardIcon /> Data Prep
-            <ArrowForwardIcon /> <div className="font-bold"> Stored </div>
-            <ArrowForwardIcon /> Terminated
-          </div>
-        );
-      } else if (status == 1) {
-        return (
-          <div className="flex items-center justify-center">
-            Requested <ArrowForwardIcon />
-            <div className="font-bold">Data Prep </div>
-            <ArrowForwardIcon /> Stored <ArrowForwardIcon /> Terminated
-          </div>
-        );
-      } else {
-        return (
-          <div className="flex items-center justify-center">
-            <div className="font-bold">Requested</div>
-            <ArrowForwardIcon /> Data Prep <ArrowForwardIcon /> Stored
-            <ArrowForwardIcon /> Terminated
-          </div>
-        );
-      }
-    };
+    {
+      StatMobile(status);
+    }
     return (
       <>
         <CardMobile
@@ -218,7 +222,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const CustomerList = ({ data }: any) => {
     return (
       <div>
-        {data.map((customer: any) => (
+        {data.map((customer) => (
           <CustomerCard
             key={customer.id}
             id={customer.id}
@@ -325,17 +329,12 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                   Download Manifest
                 </Button>
               </div>
-              <div className="flex text-lg mt-4 font-medium justify-center">
+              <div className="flex flex-col items-center text-lg mt-4 font-medium justify-center">
                 {upload?.name}
+                <div className="text-xs text-slate-400">
+                  {StatMobile(upload?.status)}
+                </div>
               </div>
-              {/* this is where upload status goes */}
-              {/* dummy  */}
-              <div className="flex items-center justify-center text-xs text-slate-400">
-                Requested <ArrowForwardIcon /> Data Prep
-                <ArrowForwardIcon /> <div className="font-bold"> Stored </div>
-                <ArrowForwardIcon /> Terminated
-              </div>
-              {/* dummy end */}
 
               <div className="mt-6 border-t border-t-black border-b border-b-black flex py-2">
                 <InputGroup>
@@ -350,140 +349,15 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
-                <Button
+                {/* <Button
                   leftIcon={<Filter />}
                   onClick={onOpen}
                   colorScheme="black"
                   variant="ghost"
                 >
                   Filter
-                </Button>
+                </Button> */}
               </div>
-              <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-                <DrawerOverlay bgColor="#16181BE5" />
-                <DrawerContent>
-                  <h1 className="text-xl mt-12 mb-2 ml-2 font-medium">
-                    Filters
-                  </h1>
-                  <DrawerBody p={0}>
-                    {/* thea: use mapping function when cleaning up */}
-                    <Accordion
-                      allowMultiple
-                      className="border-b border-b-black"
-                    >
-                      <AccordionItem>
-                        <h2>
-                          <AccordionButton className="border-t-2 border-t-black pt-4 pb-4">
-                            <Box
-                              as="span"
-                              flex="1"
-                              textAlign="left"
-                              className="font-bold mb-2 text-xs mt-2"
-                            >
-                              SIZE
-                            </Box>
-                            <AccordionIcon />
-                          </AccordionButton>
-                        </h2>
-                        <AccordionPanel pb={4}>
-                          <div className="flex flex-col gap-1">
-                            <Checkbox
-                              value={0}
-                              isChecked={statusFilter.includes(0)}
-                              onChange={(e) =>
-                                setStatusFilter((prev) =>
-                                  e.target.checked
-                                    ? [...prev, 0]
-                                    : prev.filter((status) => status !== 0)
-                                )
-                              }
-                            >
-                              under 1 GiB
-                            </Checkbox>
-                            <Checkbox
-                              value={1}
-                              isChecked={statusFilter.includes(1)}
-                              onChange={(e) =>
-                                setStatusFilter((prev) =>
-                                  e.target.checked
-                                    ? [...prev, 1]
-                                    : prev.filter((status) => status !== 1)
-                                )
-                              }
-                            >
-                              1-5 GiB
-                            </Checkbox>
-                            <Checkbox
-                              value={2}
-                              isChecked={statusFilter.includes(2)}
-                              onChange={(e) =>
-                                setStatusFilter((prev) =>
-                                  e.target.checked
-                                    ? [...prev, 2]
-                                    : prev.filter((status) => status !== 2)
-                                )
-                              }
-                            >
-                              5-10 GiB
-                            </Checkbox>
-                            <Checkbox
-                              value={3}
-                              isChecked={statusFilter.includes(3)}
-                              onChange={(e) =>
-                                setStatusFilter((prev) =>
-                                  e.target.checked
-                                    ? [...prev, 3]
-                                    : prev.filter((status) => status !== 3)
-                                )
-                              }
-                            >
-                              10+ GiB
-                            </Checkbox>
-                          </div>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      {/*<AccordionItem>*/}
-                      {/*  <h2>*/}
-                      {/*    <AccordionButton className="border-t-2 border-t-black">*/}
-                      {/*      <Box*/}
-                      {/*        as="span"*/}
-                      {/*        flex="1"*/}
-                      {/*        textAlign="left"*/}
-                      {/*        className="font-bold mb-2 text-xs mt-2"*/}
-                      {/*      >*/}
-                      {/*        UPLOAD SIZE*/}
-                      {/*      </Box>*/}
-                      {/*      <AccordionIcon />*/}
-                      {/*    </AccordionButton>*/}
-                      {/*  </h2>*/}
-                      {/*  <AccordionPanel pb={4}>*/}
-                      {/*    <div className="flex flex-col gap-1">*/}
-                      {/*      <Checkbox>less than 10TiB</Checkbox>*/}
-                      {/*      <Checkbox>10-1000TiB</Checkbox>*/}
-                      {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
-                      {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
-                      {/*    </div>*/}
-                      {/*  </AccordionPanel>*/}
-                      {/*</AccordionItem>*/}
-                    </Accordion>
-                  </DrawerBody>
-                  <DrawerFooter
-                    borderTopWidth="2px"
-                    borderTopColor="black"
-                    className="mt-12"
-                  >
-                    <Button
-                      colorScheme="black"
-                      variant="outline"
-                      mr="auto"
-                      onClick={() => setStatusFilter([])}
-                    >
-                      Clear All
-                    </Button>
-                  </DrawerFooter>
-                </DrawerContent>
-              </Drawer>
 
               <CustomerList data={files} />
             </div>

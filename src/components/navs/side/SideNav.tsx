@@ -99,13 +99,18 @@ const SideNav: React.FC<ISideNav> = ({ children }) => {
           {/* Upper Menu */}
           <ul className="mt-auto ">
             {navItemsUpper.map((item, key) => (
-              <NavItem item={item} key={key} />
+              <NavItem
+                item={item}
+                key={key}
+                handleCloseDrawer={handleCloseDrawer}
+              />
             ))}
           </ul>
           {/* Lower Menu */}
           <ul className="mt-auto">
             <div>
               {navItemsLower.map((item, key) => (
+                // @ts-ignore
                 <NavItem item={item} key={key} />
               ))}
             </div>

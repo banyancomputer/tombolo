@@ -7,7 +7,7 @@ import BrandLogo from '@/images/icons/BrandLogo';
 import BrandWordmark from '@/images/icons/BrandWordmark';
 import Hamburger from '@/images/icons/Hamburger';
 import AlphaTag from '@/images/tags/AlphaTag';
-import NavMobile from '@/components/navs/side/NavMobile';
+import NavMobile from '@/components/navs/side/SideNavMobile';
 
 const NoUploadScreen = () => {
   return (
