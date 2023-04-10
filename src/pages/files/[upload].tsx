@@ -43,7 +43,7 @@ import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import { AiOutlineFolderOpen } from 'react-icons/ai';
 import { BsThreeDots } from 'react-icons/bs';
 import NavMobile from '@/components/navs/side/SideNavMobile';
-import InfoBoxes from '@/components/items/nav/InfoBoxes';
+import StatBoxes from '@/components/items/nav/StatBoxes';
 import CardMobile from '@/components/cards/deal/CardMobile';
 import Filter from '@/images/icons/Filter';
 
@@ -241,7 +241,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
       {files.length > 0 ? (
         <>
           <div className="xs:hidden lg:block">
-            <InfoBoxes
+            <StatBoxes
               firstBox="Total Upload Size"
               firstStat={Math.round(total_size * 100) / 100}
               secondBox="Number of Files"
@@ -295,7 +295,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
           <div className="xs:block lg:hidden">
             <NavMobile />
             <div className="p-6">
-              <InfoBoxes
+              <StatBoxes
                 isDesktop={false}
                 firstBox="Total Upload Size"
                 firstStat={Math.round(total_size * 100) / 100}

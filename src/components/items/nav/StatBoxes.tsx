@@ -7,7 +7,7 @@ export interface InfoBoxes {
   isDesktop?: boolean;
 }
 
-const InfoBoxes: React.FC<InfoBoxes> = ({
+const StatBoxes: React.FC<InfoBoxes> = ({
   firstBox,
   firstStat,
   secondBox,
@@ -44,4 +44,4 @@ const InfoBoxes: React.FC<InfoBoxes> = ({
   );
 };
 
-export default InfoBoxes;
+export default StatBoxes;
