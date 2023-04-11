@@ -32,6 +32,7 @@ const FilterDrawer: React.FC<IFilter> = ({
   return (
     <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
       <DrawerOverlay bgColor="#16181BE5" />
+      {/* @ts-ignore */}
       <DrawerContent>
         <h1 className="text-xl mt-12 mb-2 ml-2 font-medium">Filters</h1>
         <DrawerBody p={0}>
