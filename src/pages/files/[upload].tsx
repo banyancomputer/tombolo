@@ -3,52 +3,27 @@ import { NextPageWithLayout } from '@/pages/page';
 import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
+import { ArrowBackIcon, SearchIcon } from '@chakra-ui/icons';
 import {
-  ArrowBackIcon,
-  ArrowForwardIcon,
-  DeleteIcon,
-  SearchIcon,
-} from '@chakra-ui/icons';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
-  Checkbox,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerOverlay,
-  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   useDisclosure,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { File } from '@/lib/entities/file';
 import NoFileScreen from '@/components/utils/screens/NoFileScreen';
 import { useAuth } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import { db, storage } from '@/lib/firebase/client';
-import { Badge } from '@chakra-ui/react';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
-import { AiOutlineFolderOpen } from 'react-icons/ai';
-import { BsThreeDots } from 'react-icons/bs';
-import NavMobile from '@/components/navs/side/SideNavMobile';
 import StatBoxes from '@/components/items/nav/StatBoxes';
-import CardMobile from '@/components/cards/deal/CardMobile';
-import Filter from '@/images/icons/Filter';
 import FileStatus from '@/functions/FileStatus';
 import CustomerList from '@/functions/CustomerList';
 import StatusBadge from '@/functions/StatusBadge';
+import Filter from '@/images/icons/Filter';
+import FilterDrawer from '@/components/filters/FilterDrawer';
 
 export interface IFileView {}
 
@@ -75,7 +50,9 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const [manifestUrl, setManifestUrl] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [sizeFilter, setSizeFilter] = useState<number[]>([]);
+  const [minSize, setMinSize] = useState<number>(0);
+  const [maxSize, setMaxSize] = useState<number>(Infinity);
+  const [isMobile] = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     // Get the upload ID from the URL. Its the last part of the URL
@@ -168,139 +145,238 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
     </div>
   );
 
+  const applyFilters = () => {
+    let filtered = files;
+
+    if (minSize > 0 || maxSize > 0) {
+      filtered = files.filter(
+        (file) => file.size >= minSize && (maxSize <= 0 || file.size <= maxSize)
+      );
+    }
+
+    if (searchQuery !== '') {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (file) =>
+          file.name.toLowerCase().includes(query) ||
+          file.id.toLowerCase().includes(query)
+      );
+      console.log('search');
+    }
+
+    return filtered;
+  };
+
   // @ts-ignore
   return (
     <AuthorizedRoute>
       {files.length > 0 ? (
         <>
-          <div className="xs:hidden lg:block">
-            <StatBoxes
-              firstBox="Total Upload Size"
-              firstStat={Math.round(total_size * 100) / 100}
-              secondBox="Number of Files"
-              secondStat={files.length}
-            />
-            <div className="border-t-2 border-t-[#000] pb-44">
-              <div className="flex mt-4">
-                {/* @ts-ignore */}
-                <Button
-                  ml={4}
-                  colorScheme="blue"
-                  variant="solid"
-                  onClick={() => router.push('/')}
-                >
-                  <ArrowBackIcon />
-                  All Uploads
-                </Button>
-
-                {/* @ts-ignore */}
-                <Button
-                  ml={4}
-                  colorScheme="blue"
-                  variant="solid"
-                  onClick={
-                    // Download from the manifest URL
-                    () => window.open(manifestUrl, '_blank')
-                  }
-                >
-                  Download Manifest
-                </Button>
-              </div>
-              <div className="flex mt-4">
-                <div className="absolute mt-28 ml-4 text-xl font-semibold flex items-center">
-                  <div>{upload?.name}</div>
-                  <div className="text-sm ml-2">
-                    {StatusBadge(upload?.status)}
+          {isMobile ? (
+            <>
+              <div className="p-6">
+                <StatBoxes
+                  isDesktop={false}
+                  firstBox="Total Upload Size"
+                  firstStat={Math.round(total_size * 100) / 100}
+                  secondBox="Number of Files"
+                  secondStat={files.length}
+                />
+                <div className="flex mt-4 justify-between">
+                  {/* @ts-ignore */}
+                  <Button
+                    ml={4}
+                    size="xs"
+                    colorScheme="black"
+                    variant="outline"
+                    onClick={() => router.push('/') /* change to dashboard */}
+                  >
+                    <ArrowBackIcon />
+                    All Uploads
+                  </Button>
+                  {/* @ts-ignore */}
+                  <Button
+                    ml={4}
+                    size="xs"
+                    bgColor="black"
+                    textColor="white"
+                    variant="solid"
+                    onClick={
+                      // Download from the manifest URL
+                      () => window.open(manifestUrl, '_blank')
+                    }
+                  >
+                    Download Manifest
+                  </Button>
+                </div>
+                <div className="flex flex-col items-center text-lg mt-4 font-medium justify-center">
+                  {upload?.name}
+                  <div className="text-xs text-slate-400">
+                    {FileStatus(upload?.status)}
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <DataTable
-              columns={fileViewColumns}
-              data={files}
-              customStyles={customStyles}
-              expandableRows
-              expandableRowsComponent={ExpandedComponentFileView}
-            />
-          </div>
-          <div className="xs:block lg:hidden">
-            <div className="p-6">
+                <div className="mt-6 border-t border-t-black border-b border-b-black flex py-2">
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <SearchIcon />
+                    </InputLeftElement>
+                    <Input
+                      width="auto"
+                      type="search"
+                      placeholder="Search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </InputGroup>
+                  <Button
+                    leftIcon={<Filter />}
+                    onClick={onOpen}
+                    colorScheme="black"
+                    variant="outline"
+                  >
+                    Filter
+                  </Button>
+                </div>
+                <FilterDrawer
+                  onClose={onClose}
+                  isOpen={isOpen}
+                  firstFilterName="SIZE"
+                  clearAll={() => {
+                    setMinSize(0);
+                    setMaxSize(0);
+                  }}
+                >
+                  <div className="flex flex-col gap-1">
+                    <p>Minimum Size (GiB):</p>
+                    <Input
+                      type="number"
+                      value={minSize > 0 ? minSize : ''}
+                      onChange={(e) => setMinSize(Number(e.target.value))}
+                    />
+
+                    <p>Maximum Size (GiB):</p>
+                    <Input
+                      type="number"
+                      value={maxSize > 0 ? maxSize : ''}
+                      onChange={(e) => setMaxSize(Number(e.target.value))}
+                    />
+                  </div>
+                </FilterDrawer>
+
+                <CustomerList
+                  data={applyFilters()}
+                  onClick={() =>
+                    (window.location.href =
+                      'https://share.hsforms.com/1OdmJPpFISTOxRp8SU2YfUge3p87')
+                  }
+                />
+              </div>
+            </>
+          ) : (
+            <>
               <StatBoxes
-                isDesktop={false}
                 firstBox="Total Upload Size"
                 firstStat={Math.round(total_size * 100) / 100}
                 secondBox="Number of Files"
                 secondStat={files.length}
               />
-              <div className="flex mt-4 justify-between">
-                {/* @ts-ignore */}
-                <Button
-                  ml={4}
-                  size="xs"
-                  colorScheme="black"
-                  variant="outline"
-                  onClick={() => router.push('/') /* change to dashboard */}
+              <div className="border-t-2 border-t-[#000] pb-44">
+                <div className="flex mt-4">
+                  {/* @ts-ignore */}
+                  <Button
+                    ml={4}
+                    colorScheme="blue"
+                    variant="solid"
+                    onClick={() => router.push('/')}
+                  >
+                    <ArrowBackIcon />
+                    All Uploads
+                  </Button>
+
+                  {/* @ts-ignore */}
+                  <Button
+                    ml={4}
+                    colorScheme="blue"
+                    variant="solid"
+                    onClick={
+                      // Download from the manifest URL
+                      () => window.open(manifestUrl, '_blank')
+                    }
+                  >
+                    Download Manifest
+                  </Button>
+                  <div className="flex ml-auto gap-4">
+                    <Button
+                      leftIcon={<Filter />}
+                      onClick={onOpen}
+                      colorScheme="black"
+                      variant="outline"
+                      bgColor="white"
+                      borderColor="white"
+                    >
+                      Filter
+                    </Button>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <SearchIcon />
+                      </InputLeftElement>
+                      <Input
+                        width="auto"
+                        type="search"
+                        placeholder="Search"
+                        bgColor="white"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </InputGroup>
+                  </div>
+                </div>
+                <FilterDrawer
+                  onClose={onClose}
+                  isOpen={isOpen}
+                  firstFilterName="SIZE"
+                  clearAll={() => {
+                    setMinSize(0);
+                    setMaxSize(0);
+                  }}
                 >
-                  <ArrowBackIcon />
-                  All Uploads
-                </Button>
-                {/* @ts-ignore */}
-                <Button
-                  ml={4}
-                  size="xs"
-                  bgColor="black"
-                  textColor="white"
-                  variant="solid"
-                  onClick={
-                    // Download from the manifest URL
-                    () => window.open(manifestUrl, '_blank')
-                  }
-                >
-                  Download Manifest
-                </Button>
-              </div>
-              <div className="flex flex-col items-center text-lg mt-4 font-medium justify-center">
-                {upload?.name}
-                <div className="text-xs text-slate-400">
-                  {FileStatus(upload?.status)}
+                  <div className="flex flex-col gap-1">
+                    <p>Minimum Size (GiB):</p>
+                    <Input
+                      type="number"
+                      value={minSize > 0 ? minSize : ''}
+                      onChange={(e) => setMinSize(Number(e.target.value))}
+                    />
+
+                    <p>Maximum Size (GiB):</p>
+                    <Input
+                      type="number"
+                      value={maxSize > 0 ? maxSize : ''}
+                      onChange={(e) => setMaxSize(Number(e.target.value))}
+                    />
+                  </div>
+                </FilterDrawer>
+
+                <div className="flex">
+                  <div className="absolute mt-28 ml-4 text-xl font-semibold flex items-center">
+                    <div>{upload?.name}</div>
+                    <div className="text-sm ml-2">
+                      {StatusBadge(upload?.status)}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-t-black border-b border-b-black flex py-2">
-                <InputGroup>
-                  <InputLeftElement pointerEvents="none">
-                    <SearchIcon />
-                  </InputLeftElement>
-                  <Input
-                    width="auto"
-                    type="search"
-                    placeholder="Search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </InputGroup>
-                <Button
-                  leftIcon={<Filter />}
-                  onClick={onOpen}
-                  colorScheme="black"
-                  variant="ghost"
-                >
-                  Filter
-                </Button>
-              </div>
-
-              <CustomerList
-                data={files}
-                onClickFileView={undefined}
-                onClickDelete={undefined}
-                onClick={() =>
-                  (window.location.href =
-                    'https://share.hsforms.com/1OdmJPpFISTOxRp8SU2YfUge3p87')
-                }
+              <DataTable
+                columns={fileViewColumns}
+                data={applyFilters()}
+                customStyles={customStyles}
+                expandableRows
+                expandableRowsComponent={ExpandedComponentFileView}
               />
-            </div>
-          </div>
+            </>
+          )}
         </>
       ) : (
         <NoFileScreen />

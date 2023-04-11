@@ -6,21 +6,22 @@ function CustomerCard({ id, name, status, size, onClickFileView, onClickDelete, 
     return (
       <>
         <CardMobile
-          name={name}
-          size={size}
           id={id}
+          name={name}
+          status={FileStatus(status)}
+          size={size}
           isFiles={isFiles}
+          onClick={onClick}
           onClickFileView={() => isFiles ? onClickFileView : (window.location.href = '/files/' + id)}
           onClickDelete={onClickDelete}
-          stat={FileStatus(status)}
-          onClick={onClick}
+         
         />
       </>
     );
   };
 
 
-  const CustomerList = ({ data, onClickFileView, onClickDelete, isFiles = true, onClick }) => {
+  const CustomerList = ({ data, onClickFileView = () => {}, onClickDelete = () => {}, isFiles = true, onClick = () => {} }) => {
     return (
       <div>
         {data.map((customer) => (
@@ -30,10 +31,10 @@ function CustomerCard({ id, name, status, size, onClickFileView, onClickDelete, 
             name={customer.name}
             status={customer.status}
             size={customer.size + ' GiB'}
-            onClickFileView={onClickFileView}
-            onClickDelete={onClickDelete}
             isFiles={isFiles}
-            onClick={onClick}
+            onClick={onClick} // only for file view 
+            onClickFileView={onClickFileView} // only for upload view
+            onClickDelete={onClickDelete} // only for upload view
           />
         ))}
       </div>
