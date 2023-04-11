@@ -6,16 +6,15 @@ import SideNavMobile from '@/components/navs/side/SideNavMobile';
 export interface IAuthedLayout {}
 // @ts-ignore
 const AuthedLayout: React.FC<IAuthedLayout> = ({ children }) => {
-  // const [isMobile] = useMediaQuery('(max-width: 79px)');
+  const [isMobile] = useMediaQuery('(max-width: 768px)');
 
   return (
     <main className={styles.main}>
-      {/* {isMobile ? (
+      {isMobile ? (
         <SideNavMobile>{children}</SideNavMobile>
       ) : (
         <SideNav>{children}</SideNav>
-      )} */}
-      <SideNav>{children}</SideNav>
+      )}
     </main>
   );
 };

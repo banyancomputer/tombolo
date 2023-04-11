@@ -46,6 +46,9 @@ import NavMobile from '@/components/navs/side/SideNavMobile';
 import StatBoxes from '@/components/items/nav/StatBoxes';
 import CardMobile from '@/components/cards/deal/CardMobile';
 import Filter from '@/images/icons/Filter';
+import FileStatus from '@/functions/FileStatus';
+import CustomerList from '@/functions/CustomerList';
+import StatusBadge from '@/functions/StatusBadge';
 
 export interface IFileView {}
 
@@ -72,7 +75,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const [manifestUrl, setManifestUrl] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [statusFilter, setStatusFilter] = useState<number[]>([]);
+  const [sizeFilter, setSizeFilter] = useState<number[]>([]);
 
   useEffect(() => {
     // Get the upload ID from the URL. Its the last part of the URL
@@ -165,76 +168,6 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
     </div>
   );
 
-  const StatMobile = (status: number) => {
-    if (status == 3) {
-      return (
-        <div className="flex items-center justify-center">
-          Requested <ArrowForwardIcon /> Data Prep
-          <ArrowForwardIcon /> Stored <ArrowForwardIcon />
-          <div className="font-bold"> Terminated </div>
-        </div>
-      );
-    } else if (status == 2) {
-      return (
-        <div className="flex items-center justify-center">
-          Requested <ArrowForwardIcon /> Data Prep
-          <ArrowForwardIcon /> <div className="font-bold"> Stored </div>
-          <ArrowForwardIcon /> Terminated
-        </div>
-      );
-    } else if (status == 1) {
-      return (
-        <div className="flex items-center justify-center">
-          Requested <ArrowForwardIcon />
-          <div className="font-bold">Data Prep </div>
-          <ArrowForwardIcon /> Stored <ArrowForwardIcon /> Terminated
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex items-center justify-center">
-          <div className="font-bold">Requested</div>
-          <ArrowForwardIcon /> Data Prep <ArrowForwardIcon /> Stored
-          <ArrowForwardIcon /> Terminated
-        </div>
-      );
-    }
-  };
-
-  const CustomerCard = ({ id, name, status, size, data }: any) => {
-    {
-      StatMobile(status);
-    }
-    return (
-      <>
-        <CardMobile
-          name={name}
-          size={size}
-          onClick={() =>
-            (window.location.href =
-              'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87')
-          }
-          id={id}
-        />
-      </>
-    );
-  };
-  const CustomerList = ({ data }: any) => {
-    return (
-      <div>
-        {data.map((customer) => (
-          <CustomerCard
-            key={customer.id}
-            id={customer.id}
-            name={customer.name}
-            status={customer.status}
-            size={customer.size + ' GiB'}
-          />
-        ))}
-      </div>
-    );
-  };
-
   // @ts-ignore
   return (
     <AuthorizedRoute>
@@ -277,8 +210,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                 <div className="absolute mt-28 ml-4 text-xl font-semibold flex items-center">
                   <div>{upload?.name}</div>
                   <div className="text-sm ml-2">
-                    {/* alex: change to upload status */}
-                    <Badge colorScheme="green">{upload?.status}</Badge>
+                    {StatusBadge(upload?.status)}
                   </div>
                 </div>
               </div>
@@ -293,7 +225,6 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
             />
           </div>
           <div className="xs:block lg:hidden">
-            <NavMobile />
             <div className="p-6">
               <StatBoxes
                 isDesktop={false}
@@ -332,7 +263,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
               <div className="flex flex-col items-center text-lg mt-4 font-medium justify-center">
                 {upload?.name}
                 <div className="text-xs text-slate-400">
-                  {StatMobile(upload?.status)}
+                  {FileStatus(upload?.status)}
                 </div>
               </div>
 
@@ -349,17 +280,25 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
-                {/* <Button
+                <Button
                   leftIcon={<Filter />}
                   onClick={onOpen}
                   colorScheme="black"
                   variant="ghost"
                 >
                   Filter
-                </Button> */}
+                </Button>
               </div>
 
-              <CustomerList data={files} />
+              <CustomerList
+                data={files}
+                onClickFileView={undefined}
+                onClickDelete={undefined}
+                onClick={() =>
+                  (window.location.href =
+                    'https://share.hsforms.com/1OdmJPpFISTOxRp8SU2YfUge3p87')
+                }
+              />
             </div>
           </div>
         </>

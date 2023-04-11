@@ -307,7 +307,6 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                     Filters
                   </h1>
                   <DrawerBody p={0}>
-                    {/* thea: use mapping function when cleaning up */}
                     <Accordion
                       allowMultiple
                       className="border-b border-b-black"
@@ -383,30 +382,6 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                           </div>
                         </AccordionPanel>
                       </AccordionItem>
-
-                      {/*<AccordionItem>*/}
-                      {/*  <h2>*/}
-                      {/*    <AccordionButton className="border-t-2 border-t-black">*/}
-                      {/*      <Box*/}
-                      {/*        as="span"*/}
-                      {/*        flex="1"*/}
-                      {/*        textAlign="left"*/}
-                      {/*        className="font-bold mb-2 text-xs mt-2"*/}
-                      {/*      >*/}
-                      {/*        UPLOAD SIZE*/}
-                      {/*      </Box>*/}
-                      {/*      <AccordionIcon />*/}
-                      {/*    </AccordionButton>*/}
-                      {/*  </h2>*/}
-                      {/*  <AccordionPanel pb={4}>*/}
-                      {/*    <div className="flex flex-col gap-1">*/}
-                      {/*      <Checkbox>less than 10TiB</Checkbox>*/}
-                      {/*      <Checkbox>10-1000TiB</Checkbox>*/}
-                      {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
-                      {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
-                      {/*    </div>*/}
-                      {/*  </AccordionPanel>*/}
-                      {/*</AccordionItem>*/}
                     </Accordion>
                   </DrawerBody>
                   <DrawerFooter
@@ -436,7 +411,6 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
             />
           </div>
           <div className="xs:block lg:hidden">
-            <NavMobile />
             <div className="p-6">
               <div className="bg-white p-3 font-medium">
                 <div className="text-slate-400">Data Stored</div>

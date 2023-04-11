@@ -197,7 +197,6 @@ const Account: NextPageWithLayout = ({}) => {
           </div>
         </div>
         <div className="xs:block lg:hidden">
-          <NavMobile />
           <div className="flex flex-col gap-2 p-6">
             <h1 className="text-xl">Profile</h1>
             <div className="flex flex-col">
