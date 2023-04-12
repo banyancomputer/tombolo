@@ -146,6 +146,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                   <div className="text-xl mt-2">{total_size} TiB</div>
                 </div>
                 <div className="mt-6 border-t border-t-black border-b border-b-black flex py-2">
+                  {/* @ts-ignore */}
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <SearchIcon />
