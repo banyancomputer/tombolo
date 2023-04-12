@@ -137,19 +137,19 @@ const Register: NextPageWithLayout = ({}) => {
 
   const handleCheckName = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    const regex = /^(?=.{1,100}$)[A-Za-z]+(?:[.'\- ][A-Za-z]+)*$/;
+    const regex = /^[A-Za-z]+(?:[.'\- ][A-Za-z]+)*$/;
     setNameValid(regex.test(value));
   };
 
   const handleCheckCompany = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    const regex = /^(?=.{1,100}$)[A-Za-z]+(?:[.'\- ][A-Za-z]+)*$/;
+    const regex = /^[A-Za-z-]+$/;
     setCompanyNameValid(regex.test(value));
   };
 
   const handleCheckJobTitle = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    const regex = /^(?=.{1,100}$)[A-Za-z]+(?:[.'\- ][A-Za-z]+)*$/;
+    const regex = /^[A-Za-z-]+$/;
     setJobTitleValid(regex.test(value));
   };
 
