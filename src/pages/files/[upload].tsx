@@ -171,7 +171,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   return (
     <AuthorizedRoute>
       {files.length > 0 ? (
-        <>
+        <div className="overflow-auto">
           {isMobile ? (
             <>
               <div className="p-6">
@@ -377,7 +377,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
               />
             </>
           )}
-        </>
+        </div>
       ) : (
         <NoFileScreen />
       )}

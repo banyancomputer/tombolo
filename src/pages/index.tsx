@@ -137,7 +137,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
   return (
     <AuthorizedRoute>
       {uploads.length > 0 ? (
-        <>
+        <div className="overflow-auto">
           {isMobile ? (
             <>
               <div className="p-6">
@@ -366,7 +366,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
               />
             </>
           )}
-        </>
+        </div>
       ) : (
         <NoUploadScreen />
       )}
