@@ -12,11 +12,11 @@ service cloud.firestore {
       function userIsValid() {
         return userIsOwner() &&
         // TODO: REGEX all fields
-        request.resource.data["companyName"] is string &&
-        request.resource.data["email"] is string &&
-        request.resource.data["fullName"] is string &&
-        request.resource.data["jobTitle"] is string &&
-        request.resource.data["phoneNumber"] is string 
+        request.resource.data["companyName"].matches("^[A-Za-z0-9]+(?:, [A-Za-z0-9]+)*(?: [A-Za-z0-9]+)*$") &&
+        request.resource.data["email"].matches("^[^@]+@[^@]+$") &&
+        request.resource.data["fullName"].matches("^[A-Za-z]+(?:[.'\\- ][A-Za-z]+)*$") &&
+        request.resource.data["jobTitle"].matches("^[A-Za-z]+(?:[ ][A-Za-z]+)*$") &&
+        request.resource.data["phoneNumber"].matches("^[0-9]+$");
       }
       
       allow read: if userIsOwner();
