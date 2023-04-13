@@ -108,7 +108,7 @@ const Login: NextPageWithLayout = ({}) => {
 
           <div className="flex items-center mt-4">
             <button
-              className="!h-[52px] flex-1 text-[#00143173] rounded-sm bg-[#CED6DE] text-"
+              className="!h-[52px] flex-1 text-[#FFF] bg-[#000] rounded-sm"
               type="submit"
             >
               Log in

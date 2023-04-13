@@ -227,7 +227,7 @@ const Register: NextPageWithLayout = ({}) => {
             onInput={handleValueChange}
           />
 
-          <div className="text-xs mb-3">
+          <div className="text-xs mb-2">
             {passwordStrengthValue}
             <div>
               {passwordStrengthValue === 'Weak' ||
@@ -251,7 +251,7 @@ const Register: NextPageWithLayout = ({}) => {
             className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3`}
             onInput={handleConfirmPasswordChange}
           />
-          <div className="text-xs mb-4">{confirmPasswordValue}</div>
+          <div className="text-xs mb-3">{confirmPasswordValue}</div>
         </div>
         <div className="relative">
           <input
@@ -301,7 +301,11 @@ const Register: NextPageWithLayout = ({}) => {
 
         <div className="flex items-center mt-4">
           <button
-            className="!h-[52px] flex-1 text-[#00143173] rounded-sm bg-[#CED6DE] text-"
+            className={`!h-[52px] flex-1 rounded-sm  ${
+              buttonDisabled
+                ? 'text-[#00143173]  bg-[#CED6DE]'
+                : 'text-[#FFF] bg-[#000]'
+            }`}
             type="submit"
             disabled={buttonDisabled}
           >
