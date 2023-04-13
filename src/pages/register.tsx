@@ -143,13 +143,13 @@ const Register: NextPageWithLayout = ({}) => {
 
   const handleCheckCompany = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    const regex = /^[A-Za-z-]+$/;
+    const regex = /^[A-Za-z0-9]+(?:, [A-Za-z0-9]+)*(?: [A-Za-z0-9]+)*$/;
     setCompanyNameValid(regex.test(value));
   };
 
   const handleCheckJobTitle = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    const regex = /^[A-Za-z-]+$/;
+    const regex = /^[A-Za-z]+(?:[ ][A-Za-z]+)*$/;
     setJobTitleValid(regex.test(value));
   };
 
