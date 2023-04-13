@@ -1,11 +1,11 @@
-import CardMobile from "@/components/cards/deal/CardMobile";
-import FileStatus from "./FileStatus";
+import DealCard from "@/components/cards/deal/DealCard";
+import FileStatus from "../../status/file/FileStatus";
 
 
 function CustomerCard({ id, name, status, size, onClickFileView, onClickDelete, isFiles, onClick }) {
     return (
       <>
-        <CardMobile
+        <DealCard
           id={id}
           name={name}
           status={FileStatus(status)}

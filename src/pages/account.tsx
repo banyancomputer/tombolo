@@ -1,38 +1,15 @@
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionIcon,
-  Box,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Input,
-  Stack,
-  Divider,
-  useMediaQuery,
-} from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import { NextPageWithLayout } from '@/pages/page';
 import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
-import { useAuth } from '@/contexts/auth';
 import { auth, db } from '@/lib/firebase/client';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import { useEffect, useState } from 'react';
 import { User } from '@/lib/entities/user';
 import LoadingScreen from '@/components/utils/screens/LoadingScreen';
-import BrandLogo from '@/images/icons/BrandLogo';
-import BrandWordmark from '@/images/icons/BrandWordmark';
-import Hamburger from '@/images/icons/Hamburger';
-import AlphaTag from '@/images/tags/AlphaTag';
-import NavMobile from '@/components/navs/side/SideNavMobile';
-import ChangeModal from '@/components/items/nav/ChangeModal';
-import AccountInfo from '@/components/cards/deal/AccountInfo';
+import { useAuth } from '@/contexts/auth';
+import AccountInfoCard from '@/components/cards/account/AccountInfoCard';
+import ChangeModal from '@/components/modals/ChangeModal';
+import useIsMobile from '@/components/utils/device/useIsMobile';
 
 const Account: NextPageWithLayout = ({}) => {
   const { user } = useAuth();
@@ -40,7 +17,7 @@ const Account: NextPageWithLayout = ({}) => {
   const [newEmail, setNewEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isMobile] = useMediaQuery('(max-width: 768px)');
+  const [isMobile] = useIsMobile();
 
   useEffect(() => {
     if (user) {
@@ -116,7 +93,7 @@ const Account: NextPageWithLayout = ({}) => {
                     }}
                   />
                 </div>
-                <AccountInfo
+                <AccountInfoCard
                   name={userData.fullName}
                   phoneNumber={userData.phoneNumber}
                   companyName={userData.companyName}
@@ -177,7 +154,7 @@ const Account: NextPageWithLayout = ({}) => {
                     }}
                   />
                 </div>
-                <AccountInfo
+                <AccountInfoCard
                   name={userData.fullName}
                   phoneNumber={userData.phoneNumber}
                   companyName={userData.companyName}

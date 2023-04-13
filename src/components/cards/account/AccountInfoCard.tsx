@@ -6,7 +6,7 @@ export interface AccountInfo {
   jobTitle: string;
 }
 
-const AccountInfo: React.FC<AccountInfo> = ({
+const AccountInfoCard: React.FC<AccountInfo> = ({
   name,
   phoneNumber,
   companyName,
@@ -34,4 +34,4 @@ const AccountInfo: React.FC<AccountInfo> = ({
   );
 };
 
-export default AccountInfo;
+export default AccountInfoCard;

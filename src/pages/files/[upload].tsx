@@ -10,20 +10,20 @@ import {
   InputGroup,
   InputLeftElement,
   useDisclosure,
-  useMediaQuery,
 } from '@chakra-ui/react';
 import { File } from '@/lib/entities/file';
 import NoFileScreen from '@/components/utils/screens/NoFileScreen';
-import { useAuth } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import { db, storage } from '@/lib/firebase/client';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
-import StatBoxes from '@/components/items/nav/StatBoxes';
-import FileStatus from '@/functions/FileStatus';
-import CustomerList from '@/functions/CustomerList';
-import StatusBadge from '@/functions/StatusBadge';
+import StatCard from '@/components/cards/stat/StatCard';
+import FileStatus from '@/components/status/file/FileStatus';
+import CustomerList from '@/components/cards/customer/CustomerList';
 import Filter from '@/images/icons/Filter';
-import FilterDrawer from '@/components/filters/FilterDrawer';
+import FilterDrawer from '@/components/drawers/FilterDrawer';
+import StatusBadge from '@/components/status/upload/StatusBadge';
+import { useAuth } from '@/contexts/auth';
+import useIsMobile from '@/components/utils/device/useIsMobile';
 
 export interface IFileView {}
 
@@ -52,7 +52,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [minSize, setMinSize] = useState<number>(0);
   const [maxSize, setMaxSize] = useState<number>(Infinity);
-  const [isMobile] = useMediaQuery('(max-width: 768px)');
+  const [isMobile] = useIsMobile();
 
   useEffect(() => {
     // Get the upload ID from the URL. Its the last part of the URL
@@ -175,8 +175,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
           {isMobile ? (
             <>
               <div className="p-6">
-                <StatBoxes
-                  isDesktop={false}
+                <StatCard
                   firstBox="Total Upload Size"
                   firstStat={Math.round(total_size * 100) / 100}
                   secondBox="Number of Files"
@@ -275,7 +274,7 @@ const FileView: NextPageWithLayout<IFileView> = ({}) => {
             </>
           ) : (
             <>
-              <StatBoxes
+              <StatCard
                 firstBox="Total Upload Size"
                 firstStat={Math.round(total_size * 100) / 100}
                 secondBox="Number of Files"

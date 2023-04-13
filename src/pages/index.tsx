@@ -15,15 +15,15 @@ import {
 } from '@chakra-ui/react';
 import NoUploadScreen from '@/components/utils/screens/NoUploadScreen';
 import { Upload } from '@/lib/entities/upload';
-import { useAuth } from '@/contexts/auth';
 import { useRouter } from 'next/router';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import Filter from '@/images/icons/Filter';
 import NewDeal from '@/images/icons/NewDeal';
-import CustomerList from '@/functions/CustomerList';
-import StatusBadge from '@/functions/StatusBadge';
-import FilterDrawer from '@/components/filters/FilterDrawer';
-
+import CustomerList from '@/components/cards/customer/CustomerList';
+import FilterDrawer from '@/components/drawers/FilterDrawer';
+import { useAuth } from '@/contexts/auth';
+import StatusBadge from '@/components/status/upload/StatusBadge';
+import useIsMobile from '@/components/utils/device/useIsMobile';
 export interface IDashboard {}
 
 const customStyles = {
@@ -48,7 +48,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
   const [total_size, setTotalSize] = useState<number>(0);
   const [statusFilter, setStatusFilter] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isMobile] = useMediaQuery('(max-width: 768px)');
+  const [isMobile] = useIsMobile();
 
   useEffect(() => {
     if (user) {

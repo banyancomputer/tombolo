@@ -6,7 +6,6 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import router from 'next/router';
 import React from 'react';
 import { AiOutlineFolderOpen } from 'react-icons/ai';
 import { BsThreeDots } from 'react-icons/bs';
@@ -21,7 +20,7 @@ export interface Card {
   stat?: any;
 }
 
-const CardMobile: React.FC<Card> = ({
+const DealCard: React.FC<Card> = ({
   name,
   size,
   onClick,
@@ -95,4 +94,4 @@ const CardMobile: React.FC<Card> = ({
   );
 };
 
-export default CardMobile;
+export default DealCard;
