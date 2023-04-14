@@ -7,6 +7,7 @@ import { NextPageWithLayout } from '@/pages/page';
 import PublicLayout from '@/components/layouts/public/PublicLayout';
 import validator from 'validator';
 import { passwordStrength } from 'check-password-strength';
+import { AsYouType } from 'libphonenumber-js';
 
 const Register: NextPageWithLayout = ({}) => {
   const router = useRouter();
@@ -25,6 +26,7 @@ const Register: NextPageWithLayout = ({}) => {
   const [nameValid, setNameValid] = useState(true);
   const [companyNameValid, setCompanyNameValid] = useState(true);
   const [jobTitleValid, setJobTitleValid] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberValid, setPhoneNumberValid] = useState(true);
   const [passwordStrengthValue, setPasswordStrengthValue] = useState<
     string | null
@@ -156,6 +158,16 @@ const Register: NextPageWithLayout = ({}) => {
   const handleCheckPhoneNumber = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
     setPhoneNumberValid(validator.isMobilePhone(value));
+
+    // libphonenumber-js does not allow for backspace after entering full US number
+    // also note there are no REGEX rules for this library
+    if (value.length < phoneNumber.length) {
+      setPhoneNumber(value);
+    } else {
+      // note this is set for US numbers only
+      const formatPhoneNumber = new AsYouType('US').input(value);
+      setPhoneNumber(formatPhoneNumber);
+    }
   };
 
   const handleSignUpUser = async (e: FormEvent<HTMLFormElement>) => {
@@ -286,6 +298,7 @@ const Register: NextPageWithLayout = ({}) => {
             type="text"
             placeholder="Phone Number"
             className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            value={phoneNumber}
             onInput={handleValueChange}
           />
         </div>
