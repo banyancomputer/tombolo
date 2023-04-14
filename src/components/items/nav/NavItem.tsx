@@ -4,9 +4,10 @@ import React from 'react';
 export interface INavItem {
   item: any;
   key: any;
+  handleCloseDrawer: () => void;
 }
 
-const NavItem: React.FC<INavItem> = ({ item }) => {
+const NavItem: React.FC<INavItem> = ({ item, handleCloseDrawer }) => {
   const location = useRouter();
 
   return (
@@ -32,6 +33,9 @@ const NavItem: React.FC<INavItem> = ({ item }) => {
               location.pathname === item.href ? '!text-[#5299E0]' : ''
             }`}
             href={item.href}
+            onClick={() => {
+              handleCloseDrawer();
+            }}
           >
             {React.createElement(item.icon)}
             {item.label}
