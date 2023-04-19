@@ -1,4 +1,3 @@
-import { useAuth } from '@/contexts/auth';
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { NextPageWithLayout } from '@/pages/page';
@@ -6,6 +5,7 @@ import LoadingSpinner from '@/components/utils/spinners/loading/LoadingSpinner';
 import PublicLayout from '@/components/layouts/public/PublicLayout';
 import PublicRoute from '@/components/utils/routes/Public';
 import { auth } from '@/lib/firebase/client';
+import { useAuth } from '@/contexts/auth';
 
 const Login: NextPageWithLayout = ({}) => {
   const { logIn } = useAuth();
