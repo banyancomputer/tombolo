@@ -23,6 +23,7 @@ const Register: NextPageWithLayout = ({}) => {
   });
   const [emailValid, setEmailValid] = useState(true);
   const [passwordValid, setPasswordValid] = useState(true);
+  const [password, setPassword] = useState('');
   const [nameValid, setNameValid] = useState(true);
   const [companyNameValid, setCompanyNameValid] = useState(true);
   const [jobTitleValid, setJobTitleValid] = useState(true);
@@ -100,6 +101,7 @@ const Register: NextPageWithLayout = ({}) => {
     const strength = passwordStrength(value);
     const passwordsMatch = value === confirmPassword;
 
+    setPassword(value);
     // Check if password is strong
     {
       if (value.length > 0) {
@@ -109,15 +111,18 @@ const Register: NextPageWithLayout = ({}) => {
       }
     }
     // Check if password and confirm password are the same
-    if (value.length === 0 || values.password.length === 0) {
+    if (
+      value.length === 0 ||
+      values.password.length === 0 ||
+      passwordsMatch ||
+      confirmPassword.length === 0
+    ) {
       setconfirmPasswordValue(null);
-    } else if (passwordsMatch) {
-      setconfirmPasswordValue('Passwords match!');
     } else {
       setconfirmPasswordValue('Passwords do not match!');
     }
     // Check is password and confirm password are the same
-    setPasswordValid(passwordsMatch);
+    setPasswordValid(passwordsMatch && value.length >= 8);
   };
 
   const handleConfirmPasswordChange = (event: FormEvent<HTMLInputElement>) => {
@@ -125,10 +130,8 @@ const Register: NextPageWithLayout = ({}) => {
     setConfirmPassword(value);
     const passwordsMatch = value === values.password;
 
-    if (value.length === 0 || values.password.length === 0) {
+    if (value.length === 0 || values.password.length === 0 || passwordsMatch) {
       setconfirmPasswordValue(null);
-    } else if (passwordsMatch) {
-      setconfirmPasswordValue('Passwords match!');
     } else {
       setconfirmPasswordValue('Passwords do not match!');
     }
@@ -225,7 +228,11 @@ const Register: NextPageWithLayout = ({}) => {
             id="email"
             type="text"
             placeholder="E-mail"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              !emailValid && !(values.email.length === 0)
+                ? '!border-red-300'
+                : ''
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -235,24 +242,23 @@ const Register: NextPageWithLayout = ({}) => {
             id="password"
             type="password"
             placeholder="Password"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 ${
+              password.length < 8 && !(password.length === 0)
+                ? '!border-red-300'
+                : ''
+            }`}
             onInput={handleValueChange}
           />
 
+          {/* <div className="text-xs mb-2">{passwordStrengthValue}</div> */}
           <div className="text-xs mb-2">
-            {passwordStrengthValue}
-            <div>
-              {passwordStrengthValue === 'Weak' ||
-              passwordStrengthValue === 'Too weak' ? (
-                <div className="px-4">
-                  We recommend
-                  <li>At least 8 characters</li>
-                  <li>One upper case letter</li>
-                  <li>One lower case letter</li>
-                  <li>One special character </li>
-                </div>
-              ) : null}
-            </div>
+            {password.length < 8 && !(password.length === 0) ? (
+              <div className="text-red-500">
+                Password must be at least 8 characters
+              </div>
+            ) : (
+              <div>{passwordStrengthValue}</div>
+            )}
           </div>
         </div>
         <div className="relative">
@@ -260,7 +266,11 @@ const Register: NextPageWithLayout = ({}) => {
             id="confirmPassword"
             type="password"
             placeholder="Confirm Password"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 ${
+              confirmPasswordValue == 'Passwords do not match!'
+                ? '!border-red-300'
+                : ''
+            }`}
             onInput={handleConfirmPasswordChange}
           />
           <div className="text-xs mb-3">{confirmPasswordValue}</div>
@@ -270,7 +280,9 @@ const Register: NextPageWithLayout = ({}) => {
             id="fullName"
             type="text"
             placeholder="Full Name"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              nameValid ? '' : '!border-red-300'
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -279,7 +291,9 @@ const Register: NextPageWithLayout = ({}) => {
             id="companyName"
             type="text"
             placeholder="Company Name"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              companyNameValid ? '' : '!border-red-300'
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -288,7 +302,9 @@ const Register: NextPageWithLayout = ({}) => {
             id="jobTitle"
             type="text"
             placeholder="Job Title"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              jobTitleValid ? '' : '!border-red-300'
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -297,7 +313,9 @@ const Register: NextPageWithLayout = ({}) => {
             id="phoneNumber"
             type="text"
             placeholder="Phone Number"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              phoneNumberValid ? '' : '!border-red-300'
+            }`}
             value={phoneNumber}
             onInput={handleValueChange}
           />
@@ -316,8 +334,8 @@ const Register: NextPageWithLayout = ({}) => {
           <button
             className={`!h-[52px] flex-1 rounded-sm  ${
               buttonDisabled
-                ? 'text-[#00143173]  bg-[#CED6DE]'
-                : 'text-[#FFF] bg-[#000]'
+                ? 'text-[#00143173] bg-[#CED6DE] cursor-not-allowed'
+                : 'text-[#FFF] bg-[#5299E0]'
             }`}
             type="submit"
             disabled={buttonDisabled}
