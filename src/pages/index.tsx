@@ -3,7 +3,7 @@ import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
 import { db } from '@/lib/firebase/client';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { AddIcon, SearchIcon } from '@chakra-ui/icons';
+import { AddIcon, ArrowForwardIcon, SearchIcon } from '@chakra-ui/icons';
 import {
   Button,
   Checkbox,
@@ -11,7 +11,6 @@ import {
   InputGroup,
   InputLeftElement,
   useDisclosure,
-  useMediaQuery,
 } from '@chakra-ui/react';
 import NoUploadScreen from '@/components/utils/screens/NoUploadScreen';
 import { Upload } from '@/lib/entities/upload';
@@ -19,11 +18,13 @@ import { useRouter } from 'next/router';
 import AuthorizedRoute from '@/components/utils/routes/Authorized';
 import Filter from '@/images/icons/Filter';
 import NewDeal from '@/images/icons/NewDeal';
-import CustomerList from '@/components/cards/customer/CustomerList';
 import FilterDrawer from '@/components/drawers/FilterDrawer';
 import { useAuth } from '@/contexts/auth';
 import StatusBadge from '@/components/status/upload/StatusBadge';
 import useIsMobile from '@/components/utils/device/useIsMobile';
+import DealCard from '@/components/cards/deal/DealCard';
+import FileStatus from '@/components/status/file/FileStatus';
+import CustomerList from '@/components/cards/customer/CustomerList';
 export interface IDashboard {}
 
 const customStyles = {
