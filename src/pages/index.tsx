@@ -3,7 +3,7 @@ import AuthedLayout from '@/components/layouts/authed/AuthedLayout';
 import { db } from '@/lib/firebase/client';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { AddIcon, ArrowForwardIcon, SearchIcon } from '@chakra-ui/icons';
+import { AddIcon, SearchIcon } from '@chakra-ui/icons';
 import {
   Button,
   Checkbox,
@@ -22,8 +22,6 @@ import FilterDrawer from '@/components/drawers/FilterDrawer';
 import { useAuth } from '@/contexts/auth';
 import StatusBadge from '@/components/status/upload/StatusBadge';
 import useIsMobile from '@/components/utils/device/useIsMobile';
-import DealCard from '@/components/cards/deal/DealCard';
-import FileStatus from '@/components/status/file/FileStatus';
 import CustomerList from '@/components/cards/customer/CustomerList';
 export interface IDashboard {}
 
