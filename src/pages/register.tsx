@@ -10,8 +10,6 @@ import { AsYouType } from 'libphonenumber-js';
 import PublicRoute from '@/components/utils/routes/Public';
 import { useAuth } from '@/contexts/auth';
 
-
-
 const Register: NextPageWithLayout = ({}) => {
   const router = useRouter();
   const { user, userLoading } = useAuth();
@@ -151,7 +149,9 @@ const Register: NextPageWithLayout = ({}) => {
 
   const handleCheckCompany = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    const regex = /^[A-Za-z0-9]+(?:, [A-Za-z0-9]+)*(?: [A-Za-z0-9]+)*$/;
+    const regex =
+      /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*(?:, [A-Za-z0-9]+)*(?: [A-Za-z0-9]+)*(?:\.[A-Za-z0-9]*)?(?: [A-Za-z0-9]+)*$/;
+
     setCompanyNameValid(regex.test(value));
   };
 
