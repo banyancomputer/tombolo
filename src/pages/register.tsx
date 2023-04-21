@@ -3,11 +3,12 @@ import { auth, db } from '@/lib/firebase/client';
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { NextPageWithLayout } from '@/pages/page';
-import LoadingSpinner from '@/components/utils/spinners/loading/LoadingSpinner';
 import PublicLayout from '@/components/layouts/public/PublicLayout';
+import validator from 'validator';
+import { passwordStrength } from 'check-password-strength';
+import { AsYouType } from 'libphonenumber-js';
 import PublicRoute from '@/components/utils/routes/Public';
 import { useAuth } from '@/contexts/auth';
-// import validator from 'validator';
 
 const Register: NextPageWithLayout = ({}) => {
   const router = useRouter();
@@ -23,7 +24,19 @@ const Register: NextPageWithLayout = ({}) => {
   });
   const [emailValid, setEmailValid] = useState(true);
   const [passwordValid, setPasswordValid] = useState(true);
+  const [password, setPassword] = useState('');
+  const [nameValid, setNameValid] = useState(true);
+  const [companyNameValid, setCompanyNameValid] = useState(true);
+  const [jobTitleValid, setJobTitleValid] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberValid, setPhoneNumberValid] = useState(true);
+  const [passwordStrengthValue, setPasswordStrengthValue] = useState<
+    string | null
+  >(null);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordValue, setconfirmPasswordValue] = useState<
+    string | null
+  >(null);
 
   const [error, setError] = useState('');
 
@@ -33,11 +46,15 @@ const Register: NextPageWithLayout = ({}) => {
       values.password.length === 0 ||
       !passwordValid ||
       values.fullName.length === 0 ||
+      !nameValid ||
       values.companyName.length === 0 ||
+      !companyNameValid ||
       values.jobTitle.length === 0 ||
+      !jobTitleValid ||
       values.phoneNumber.length === 0 ||
       !phoneNumberValid
   );
+
   const handleValueChange = (e: any) => {
     const id = e.target.id;
     const newValue = e.target.value;
@@ -54,6 +71,21 @@ const Register: NextPageWithLayout = ({}) => {
       handleCheckPassword(e);
     }
 
+    // Check if full name is valid
+    if (id === 'fullName') {
+      handleCheckName(e);
+    }
+
+    // Check if company name is valid
+    if (id === 'companyName') {
+      handleCheckCompany(e);
+    }
+
+    // Check if job title  is valid
+    if (id === 'jobTitle') {
+      handleCheckJobTitle(e);
+    }
+
     // Check if phone number is valid
     if (id === 'phoneNumber') {
       handleCheckPhoneNumber(e);
@@ -62,24 +94,86 @@ const Register: NextPageWithLayout = ({}) => {
 
   const handleCheckEmail = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    // setEmailValid(validator.isEmail(value));
-    setEmailValid(value.length > 0);
+    setEmailValid(validator.isEmail(value));
   };
 
   const handleCheckPassword = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    // TODO: Better password validation
-    // Check is password and confirm password are the same
+    const strength = passwordStrength(value);
+    const passwordsMatch = value === confirmPassword;
 
-    setPasswordValid(
-      value.length > 6 // && values.password === values.confirmPassword
-    );
+    setPassword(value);
+    // Check if password is strong
+    {
+      if (value.length > 0) {
+        setPasswordStrengthValue(strength.value);
+      } else {
+        setPasswordStrengthValue(null);
+      }
+    }
+    // Check if password and confirm password are the same
+    if (
+      value.length === 0 ||
+      values.password.length === 0 ||
+      passwordsMatch ||
+      confirmPassword.length === 0
+    ) {
+      setconfirmPasswordValue(null);
+    } else {
+      setconfirmPasswordValue('Passwords do not match!');
+    }
+    // Check is password and confirm password are the same
+    setPasswordValid(passwordsMatch && value.length >= 8);
+  };
+
+  const handleConfirmPasswordChange = (event: FormEvent<HTMLInputElement>) => {
+    const { value } = event.target as HTMLInputElement;
+    setConfirmPassword(value);
+    const passwordsMatch = value === values.password;
+
+    if (value.length === 0 || values.password.length === 0 || passwordsMatch) {
+      setconfirmPasswordValue(null);
+    } else {
+      setconfirmPasswordValue('Passwords do not match!');
+    }
+
+    // Check if password and confirm password are the same
+    setPasswordValid(passwordsMatch);
+  };
+
+  const handleCheckName = (event: FormEvent<HTMLInputElement>) => {
+    const { value } = event.target as HTMLInputElement;
+    const regex = /^[A-Za-z]+(?:[.'\- ][A-Za-z]+)*$/;
+    setNameValid(regex.test(value));
+  };
+
+  const handleCheckCompany = (event: FormEvent<HTMLInputElement>) => {
+    const { value } = event.target as HTMLInputElement;
+    const regex =
+      /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*(?:, [A-Za-z0-9]+)*(?: [A-Za-z0-9]+)*(?:\.[A-Za-z0-9]*)?(?: [A-Za-z0-9]+)*$/;
+
+    setCompanyNameValid(regex.test(value));
+  };
+
+  const handleCheckJobTitle = (event: FormEvent<HTMLInputElement>) => {
+    const { value } = event.target as HTMLInputElement;
+    const regex = /^[A-Za-z]+(?:[ ][A-Za-z]+)*$/;
+    setJobTitleValid(regex.test(value));
   };
 
   const handleCheckPhoneNumber = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.target as HTMLInputElement;
-    // setPhoneNumberValid(validator.isMobilePhone(value));
-    setPhoneNumberValid(value.length > 0);
+    setPhoneNumberValid(validator.isMobilePhone(value));
+
+    // libphonenumber-js does not allow for backspace after entering full US number
+    // also note there are no REGEX rules for this library
+    if (value.length < phoneNumber.length) {
+      setPhoneNumber(value);
+    } else {
+      // note this is set for US numbers only
+      const formatPhoneNumber = new AsYouType('US').input(value);
+      setPhoneNumber(formatPhoneNumber);
+    }
   };
 
   const handleSignUpUser = async (e: FormEvent<HTMLFormElement>) => {
@@ -111,8 +205,11 @@ const Register: NextPageWithLayout = ({}) => {
         values.password.length === 0 ||
         !passwordValid ||
         values.fullName.length === 0 ||
+        !nameValid ||
         values.companyName.length === 0 ||
+        !companyNameValid ||
         values.jobTitle.length === 0 ||
+        !jobTitleValid ||
         values.phoneNumber.length === 0 ||
         !phoneNumberValid
     );
@@ -134,38 +231,61 @@ const Register: NextPageWithLayout = ({}) => {
             id="email"
             type="text"
             placeholder="E-mail"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              !emailValid && !(values.email.length === 0)
+                ? '!border-red-300'
+                : ''
+            }`}
             onInput={handleValueChange}
           />
         </div>
+
         <div className="relative">
           <input
             id="password"
             type="password"
             placeholder="Password"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 ${
+              password.length < 8 && !(password.length === 0)
+                ? '!border-red-300'
+                : ''
+            }`}
             onInput={handleValueChange}
           />
+
+          {/* <div className="text-xs mb-2">{passwordStrengthValue}</div> */}
+          <div className="text-xs mb-2">
+            {password.length < 8 && !(password.length === 0) ? (
+              <div className="text-red-500">
+                Password must be at least 8 characters
+              </div>
+            ) : (
+              <div>{passwordStrengthValue}</div>
+            )}
+          </div>
         </div>
-        {/*<h2 className="mt-4 mb-2 text-sm font-semibold">Confirm Password</h2>*/}
-        {/*<div className="relative">*/}
-        {/*  <input*/}
-        {/*    id="confirmPassword"*/}
-        {/*    type="password"*/}
-        {/*    placeholder="********"*/}
-        {/*    className={`input input-bordered bg-neutral-50 !text-neutral-900 dark:border-neutral-900 rounded-lg focus:outline-none w-full px-3 block ${*/}
-        {/*      passwordValid ? '!border-blue-300' : '!border-orange-400'*/}
-        {/*    }*/}
-        {/*            `}*/}
-        {/*    onInput={handleValueChange}*/}
-        {/*  />*/}
-        {/*</div>*/}
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 ${
+              confirmPasswordValue == 'Passwords do not match!'
+                ? '!border-red-300'
+                : ''
+            }`}
+            onInput={handleConfirmPasswordChange}
+          />
+          <div className="text-xs mb-3">{confirmPasswordValue}</div>
+        </div>
         <div className="relative">
           <input
             id="fullName"
             type="text"
             placeholder="Full Name"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              nameValid ? '' : '!border-red-300'
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -174,7 +294,9 @@ const Register: NextPageWithLayout = ({}) => {
             id="companyName"
             type="text"
             placeholder="Company Name"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              companyNameValid ? '' : '!border-red-300'
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -183,7 +305,9 @@ const Register: NextPageWithLayout = ({}) => {
             id="jobTitle"
             type="text"
             placeholder="Job Title"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              jobTitleValid ? '' : '!border-red-300'
+            }`}
             onInput={handleValueChange}
           />
         </div>
@@ -192,7 +316,10 @@ const Register: NextPageWithLayout = ({}) => {
             id="phoneNumber"
             type="text"
             placeholder="Phone Number"
-            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3`}
+            className={`input border-[#E9E9EA] border-2 rounded-sm focus:outline-none w-full px-3 mb-3 ${
+              phoneNumberValid ? '' : '!border-red-300'
+            }`}
+            value={phoneNumber}
             onInput={handleValueChange}
           />
         </div>
@@ -208,8 +335,13 @@ const Register: NextPageWithLayout = ({}) => {
 
         <div className="flex items-center mt-4">
           <button
-            className="!h-[52px] flex-1 text-[#00143173] rounded-sm bg-[#CED6DE] text-"
+            className={`!h-[52px] flex-1 rounded-sm  ${
+              buttonDisabled
+                ? 'text-[#00143173] bg-[#CED6DE] cursor-not-allowed'
+                : 'text-[#FFF] bg-[#5299E0]'
+            }`}
             type="submit"
+            disabled={buttonDisabled}
           >
             Sign Up
           </button>
