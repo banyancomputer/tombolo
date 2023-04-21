@@ -17,7 +17,7 @@ export interface Card {
   isFiles?: boolean;
   onClickFileView?: () => void;
   onClickDelete?: () => void;
-  stat?: any;
+  status?: any;
 }
 
 const DealCard: React.FC<Card> = ({
@@ -28,7 +28,7 @@ const DealCard: React.FC<Card> = ({
   isFiles = true,
   onClickFileView,
   onClickDelete,
-  stat,
+  status,
 }) => {
   return isFiles ? (
     <>
@@ -85,7 +85,9 @@ const DealCard: React.FC<Card> = ({
           </MenuList>
         </Menu>
       </div>
-      <div className="border-b text-center text-xs text-slate-400">{stat}</div>
+      <div className="border-b text-center text-xs text-slate-400">
+        {status}
+      </div>
       <div className="text-xs text-slate-400 p-3">
         Upload ID
         <div className="text-black truncate"> {id}</div>

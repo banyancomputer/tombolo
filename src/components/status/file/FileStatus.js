@@ -6,14 +6,14 @@ function FileStatus(status) {
           <div className="flex items-center justify-center">
             Requested <ArrowForwardIcon /> Data Prep
             <ArrowForwardIcon /> Stored <ArrowForwardIcon />
-            <div className="font-bold"> Terminated </div>
+            <div className="font-bold text-black"> Terminated </div>
           </div>
         );
       } else if (status == 2) {
         return (
           <div className="flex items-center justify-center">
             Requested <ArrowForwardIcon /> Data Prep
-            <ArrowForwardIcon /> <div className="font-bold"> Stored </div>
+            <ArrowForwardIcon /> <div className="font-bold text-black"> Stored </div>
             <ArrowForwardIcon /> Terminated
           </div>
         );
@@ -21,14 +21,14 @@ function FileStatus(status) {
         return (
           <div className="flex items-center justify-center">
             Requested <ArrowForwardIcon />
-            <div className="font-bold">Data Prep </div>
+            <div className="font-bold text-black">Data Prep </div>
             <ArrowForwardIcon /> Stored <ArrowForwardIcon /> Terminated
           </div>
         );
       } else {
         return (
           <div className="flex items-center justify-center">
-            <div className="font-bold">Requested</div>
+            <div className="font-bold text-black">Requested</div>
             <ArrowForwardIcon /> Data Prep <ArrowForwardIcon /> Stored
             <ArrowForwardIcon /> Terminated
           </div>

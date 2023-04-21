@@ -9,7 +9,7 @@ const NoUploadScreen = () => {
     <>
       <div className="h-screen flex justify-center content-center">
         <div className="text-xl font-medium mt-auto mb-auto">
-          You don&apos;t have any upload groups yet.
+          You don&apos;t have any uploads yet.
           <p className="break-after-colum"></p>
           <Link
             href={'https://share.hsforms.com/1mvZF3awnRJC6ywL2aC8-tQe3p87'}
@@ -30,14 +30,16 @@ const NoUploadScreen = () => {
             <HStack spacing={2} direction="row">
               <ArrowForwardIcon />
               <Icon
+                className="cursor-pointer"
                 w={30}
                 h={30}
                 as={SiTwitter}
                 onClick={() =>
-                  window.open('https://twitter.com/BanyanComputer', '_blank')
+                  window.open('https://twitter.com/tombolostorage', '_blank')
                 }
               />
               <Icon
+                className="cursor-pointer"
                 w={30}
                 h={30}
                 as={SiDiscord}
