@@ -163,9 +163,9 @@ yarn run cypress open
 
 Running these commands will open the Launchpad. We're currently using E2E testing, where we test whole pages. You don't need to configure any files and you can chose your preferred browser to test.
 
-To create your first test, go to "Create new empty spec". Cypress monitors your spec files for any changes and automatically displays any changes.
+To create your first test, go to "Create new empty spec". Create a file in cypress/e2e ending in ```.cy.ts``` and the spec file will automatically show up in your list of e2e specs. 
 
-Our test files are in cypress/e2e. Create a file ending in ```.cy.ts``` and the spec file will automatically show up in your list of e2e specs. 
+Cypress monitors your spec files for any changes and automatically displays any changes.
 
 ## Deployment
 
