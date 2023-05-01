@@ -4,7 +4,6 @@ import { db } from '@/lib/firebase/client';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { AddIcon, HamburgerIcon, SearchIcon } from '@chakra-ui/icons';
-import Separator from '@/images/icons/Separator';
 import {
   Accordion,
   AccordionButton,
@@ -23,11 +22,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  InputRightElement,
-  RangeSlider,
-  RangeSliderFilledTrack,
-  RangeSliderThumb,
-  RangeSliderTrack,
   useDisclosure,
 } from '@chakra-ui/react';
 import NoUploadScreen from '@/components/utils/screens/NoUploadScreen';
@@ -284,30 +278,6 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
                         </div>
                       </AccordionPanel>
                     </AccordionItem>
-
-                    {/*<AccordionItem>*/}
-                    {/*  <h2>*/}
-                    {/*    <AccordionButton className="border-t-2 border-t-black">*/}
-                    {/*      <Box*/}
-                    {/*        as="span"*/}
-                    {/*        flex="1"*/}
-                    {/*        textAlign="left"*/}
-                    {/*        className="font-bold mb-2 text-xs mt-2"*/}
-                    {/*      >*/}
-                    {/*        UPLOAD SIZE*/}
-                    {/*      </Box>*/}
-                    {/*      <AccordionIcon />*/}
-                    {/*    </AccordionButton>*/}
-                    {/*  </h2>*/}
-                    {/*  <AccordionPanel pb={4}>*/}
-                    {/*    <div className="flex flex-col gap-1">*/}
-                    {/*      <Checkbox>less than 10TiB</Checkbox>*/}
-                    {/*      <Checkbox>10-1000TiB</Checkbox>*/}
-                    {/*      <Checkbox>1001-99999TiB</Checkbox>*/}
-                    {/*      <Checkbox>more than 10000TiB</Checkbox>*/}
-                    {/*    </div>*/}
-                    {/*  </AccordionPanel>*/}
-                    {/*</AccordionItem>*/}
                   </Accordion>
                 </DrawerBody>
                 <DrawerFooter
@@ -330,8 +300,7 @@ const Dashboard: NextPageWithLayout<IDashboard> = () => {
           </div>
           <DataTable
             columns={overviewColumns}
-            // data={uploads}
-            data={applyFilters()} // thea: remove this
+            data={applyFilters()}
             customStyles={customStyles}
             expandableRows
             expandableRowsComponent={ExpandedComponentOverView}

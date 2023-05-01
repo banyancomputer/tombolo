@@ -38,6 +38,13 @@ describe('Logging in desktop as a user with no demo data', () => {
         cy.get('button[type="submit"]').click()
         cy.url().should('include', '/')
 
+        cy.get('[data-testid="expander-button-1"]')
+        .click(); 
+
+        cy.get('button') 
+        .contains('Open File View')
+        .click(); 
+
         cy.get('a[href="/upload-portal"]').click();
         cy.url().should('include', '/upload-portal');
 
