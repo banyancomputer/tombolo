@@ -24,6 +24,7 @@
     "@types/node": "18.15.5",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "check-password-strength": "^2.0.7",
     "daisyui": "^2.51.5",
     "dashify": "^2.0.0",
     "eslint": "8.36.0",
@@ -31,6 +32,7 @@
     "firebase": "^9.20.0",
     "firebase-admin": "^11.5.0",
     "framer-motion": "^10.8.5",
+    "libphonenumber-js": "^1.10.26",
     "next": "13.2.4",
     "nookies": "^2.5.2",
     "react": "18.2.0",
@@ -43,6 +45,7 @@
     "validator": "^13.9.0"
   },
   "devDependencies": {
+    "@types/validator": "^13.7.14",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "autoprefixer": "^10.4.14",
     "babel-eslint": "^10.1.0",

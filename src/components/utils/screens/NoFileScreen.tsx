@@ -23,22 +23,16 @@ const NoFileScreen = () => {
           <HStack spacing={2} direction="row">
             <ArrowForwardIcon />
             <Icon
+              className="cursor-pointer"
               w={30}
               h={30}
               as={SiTwitter}
               onClick={() =>
-                window.open('https://twitter.com/BanyanComputer', '_blank')
+                window.open('https://twitter.com/tombolostorage', '_blank')
               }
             />
             <Icon
-              w={30}
-              h={30}
-              as={SiMedium}
-              onClick={() =>
-                window.open('https://medium.com/@banyan.computer', '_blank')
-              }
-            />
-            <Icon
+              className="cursor-pointer"
               w={30}
               h={30}
               as={SiDiscord}
