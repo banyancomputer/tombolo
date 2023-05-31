@@ -152,7 +152,20 @@ If you find yourself making edits to this tool, please consider if there is a be
 
 ## Testing
 
-We don't have a good testing solution for the frontend yet. We should probably use Cypress + Firebase Emulators for this.
+We are using Cypress to test. The frontend should be running locally prior to testing.
+
+To install and open Cypress, run the following commands:
+
+```bash
+yarn add cypress --dev
+yarn run cypress open
+```
+
+Running these commands will open the Launchpad. We're currently using E2E testing, where we test whole pages. You don't need to configure any files and you can chose your preferred browser to test.
+
+To create your first test, go to "Create new empty spec". Create a file in cypress/e2e ending in ```.cy.ts``` and the spec file will automatically show up in your list of e2e specs. 
+
+Cypress monitors your spec files for any changes and automatically displays any changes.
 
 ## Deployment
 
